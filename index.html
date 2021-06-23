@@ -180,6 +180,7 @@
 <p>利用函数来判断是否oracle数据库 如：and len(‘a’)=1（在mssql和mysql以及db2内，返回长度值是调用len()函数；在oracle和INFORMIX则是通过length()来返回长度值。）</p>
 <p>也可以通过dual来判断是否为oracle ：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">and (select count(\*) from dual)&gt;1 --</span><br></pre></td></tr></table></figure>
+<p><img src="assets/image-20210426172344519-2.jpg" alt="image-20210426172344519"></p>
 
       
 
