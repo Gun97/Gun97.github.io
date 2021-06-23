@@ -15,13 +15,13 @@
 <meta property="og:site_name" content="我的小blog">
 <meta property="og:description" content="oracle的数据库实例：Oracle数据库的基本单位，等同于Mysql中的库 数据库实例名是用于和操作系统进行联系的标识，就是说数据库和操作系统之间的交互用的是数据库实例名。实例名也被写入参数文件中，该参数为instance_name，在winnt平台中，实例名同时也被写入注册表。数据库名和实例名可以相同也可以不同。在一般情况下，数据库名和实例名是一对一的关系，但如果在oracle并行服务器架构">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/.com//image-20210426172344519.jpg">
+<meta property="og:image" content="http://example.com/2021/06/23/oracle/image-20210426172344519.jpg">
 <meta property="article:published_time" content="2021-06-23T12:15:19.000Z">
 <meta property="article:modified_time" content="2021-06-23T13:19:37.210Z">
 <meta property="article:author" content="Gun97Dt">
 <meta property="article:tag" content="sql注入 web安全 技术">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/.com//image-20210426172344519.jpg">
+<meta name="twitter:image" content="http://example.com/2021/06/23/oracle/image-20210426172344519.jpg">
   
     <link rel="alternative" href="/atom.xml" title="我的小blog" type="application/atom+xml">
   
@@ -183,7 +183,7 @@
 <p>利用函数来判断是否oracle数据库 如：and len(‘a’)=1（在mssql和mysql以及db2内，返回长度值是调用len()函数；在oracle和INFORMIX则是通过length()来返回长度值。）</p>
 <p>也可以通过dual来判断是否为oracle ：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">and (select count(\*) from dual)&gt;1 --</span><br></pre></td></tr></table></figure>
-<p><img src="/.com//image-20210426172344519.jpg" alt="image-20210426172344519.jpg"></p>
+<p><img src="/2021/06/23/oracle/image-20210426172344519.jpg" alt="image-20210426172344519.jpg"></p>
 
       
 
