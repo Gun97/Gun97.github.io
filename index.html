@@ -480,7 +480,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
           
         
           
-            <a href="https://github.com/volantis-x/"
+            <a href="https://gun97.github.io/"
               class="social fab fa-github flat-btn"
               target="_blank"
               rel="external nofollow noopener noreferrer">
@@ -972,13 +972,15 @@ const ROOT =  ("/" || "/").endsWith('/') ? ("/" || "/") : ("//" || "/" );
 
 $('.input.u-search-input').one('focus',function(){
 	
-		loadScript('/js/search/hexo.js',setSearchService);
+		loadScript('/js/search/baidu.js',setSearchService);
 	
 })
 
 function listenSearch(){
   
-    customSearch = new HexoSearch({
+    const BAIDU_API_ID = "";
+    customSearch = new BaiduSearch({
+      apiId: BAIDU_API_ID,
       imagePath: SearchServiceimagePath
     });
   

@@ -592,7 +592,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2021-06-24T13:09:21+08:00">
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2021-06-24T13:32:24+08:00">
   <a class='notlink'>
     <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
     <p>更新于：2021年6月24日</p>
@@ -685,19 +685,6 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     </div>
   
 </article>
-
-
-  
-
-  <article class="post white-box reveal shadow" id="comments">
-    <p ct><i class='fas fa-comments'></i> 评论</p>
-    
-    <div id="valine_container" class="valine_thread">
-  <i class="fas fa-cog fa-spin fa-fw fa-2x"></i>
-</div>
-
-  </article>
-
 
 
 
@@ -1144,13 +1131,15 @@ const ROOT =  ("/" || "/").endsWith('/') ? ("/" || "/") : ("//" || "/" );
 
 $('.input.u-search-input').one('focus',function(){
 	
-		loadScript('/js/search/hexo.js',setSearchService);
+		loadScript('/js/search/baidu.js',setSearchService);
 	
 })
 
 function listenSearch(){
   
-    customSearch = new HexoSearch({
+    const BAIDU_API_ID = "";
+    customSearch = new BaiduSearch({
+      apiId: BAIDU_API_ID,
       imagePath: SearchServiceimagePath
     });
   

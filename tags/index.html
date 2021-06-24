@@ -773,13 +773,15 @@ const ROOT =  ("/" || "/").endsWith('/') ? ("/" || "/") : ("//" || "/" );
 
 $('.input.u-search-input').one('focus',function(){
 	
-		loadScript('/js/search/hexo.js',setSearchService);
+		loadScript('/js/search/baidu.js',setSearchService);
 	
 })
 
 function listenSearch(){
   
-    customSearch = new HexoSearch({
+    const BAIDU_API_ID = "";
+    customSearch = new BaiduSearch({
+      apiId: BAIDU_API_ID,
       imagePath: SearchServiceimagePath
     });
   
