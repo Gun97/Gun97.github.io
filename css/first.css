@@ -3,7 +3,7 @@
 }
 @supports (backdrop-filter: blur(20px)) {
   .blur {
-    background: rgba(0,205,0,0.9) !important;
+    background: rgba(255,165,0,0.9) !important;
     backdrop-filter: saturate(200%) blur(20px);
   }
 }
@@ -34,9 +34,9 @@
 :root {
   --color-site-body: #f4f4f4;
   --color-site-bg: #f4f4f4;
-  --color-site-inner: #00cd00;
+  --color-site-inner: #ffa500;
   --color-site-footer: #666;
-  --color-card: #00cd00;
+  --color-card: #ffa500;
   --color-text: #444;
   --color-block: #f6f6f6;
   --color-inlinecode: #c74f00;
@@ -628,7 +628,7 @@ th {
   -webkit-appearance: none;
   padding-left: 36px;
   border-radius: 1.4rem;
-  background: rgba(0,205,0,0.6);
+  background: rgba(255,165,0,0.6);
   backdrop-filter: blur(10px);
   border: none;
   color: var(--color-text);
@@ -639,10 +639,10 @@ th {
   }
 }
 .cover-wrapper .cover-body .m_search .input:hover {
-  background: rgba(0,205,0,0.8);
+  background: rgba(255,165,0,0.8);
 }
 .cover-wrapper .cover-body .m_search .input:focus {
-  background: #00cd00;
+  background: #ffa500;
 }
 .cover-wrapper .list-h {
   display: flex;
@@ -779,7 +779,7 @@ th {
   margin-bottom: 48px;
 }
 .cover-wrapper.dock .menu {
-  background: rgba(0,205,0,0.5);
+  background: rgba(255,165,0,0.5);
   position: absolute;
   bottom: 0;
   max-width: 100%;
@@ -813,7 +813,7 @@ th {
 }
 @supports (backdrop-filter: blur(20px)) {
   .cover-wrapper.dock .menu {
-    background: rgba(0,205,0,0.5);
+    background: rgba(255,165,0,0.5);
     backdrop-filter: saturate(200%) blur(20px);
   }
 }
@@ -822,11 +822,11 @@ th {
 }
 .cover-wrapper.featured .menu .list-h a {
   margin: 2px;
-  background: rgba(0,205,0,0.5);
+  background: rgba(255,165,0,0.5);
 }
 @supports (backdrop-filter: blur(20px)) {
   .cover-wrapper.featured .menu .list-h a {
-    background: rgba(0,205,0,0.5);
+    background: rgba(255,165,0,0.5);
     backdrop-filter: saturate(200%) blur(20px);
   }
 }
@@ -840,11 +840,11 @@ th {
   margin: 2px;
 }
 .cover-wrapper.focus .menu:hover {
-  background: rgba(0,205,0,0.5);
+  background: rgba(255,165,0,0.5);
 }
 @supports (backdrop-filter: blur(20px)) {
   .cover-wrapper.focus .menu:hover {
-    background: rgba(0,205,0,0.5);
+    background: rgba(255,165,0,0.5);
     backdrop-filter: saturate(200%) blur(20px);
   }
 }
@@ -1072,7 +1072,7 @@ th {
   line-height: 1.3;
   width: 100%;
   color: var(--color-text);
-  background: #00c300;
+  background: #f59e00;
   box-shadow: none;
   box-sizing: border-box;
   padding-left: 40px;
@@ -1106,7 +1106,7 @@ th {
     width: 0;
     overflow: hidden;
     position: absolute;
-    background: #00e700;
+    background: #ffae1a;
     transition: all 0.28s ease;
     -moz-transition: all 0.28s ease;
     -webkit-transition: all 0.28s ease;
@@ -1475,7 +1475,7 @@ ul.list-v >li>a:hover {
   border-top-right-radius: 4px;
   font-size: $fontsize;
   box-shadow: 0 1px 2px 0px rgba(0,0,0,0.1);
-  background: #00e700;
+  background: #ffae1a;
   transition: all 0.28s ease;
   -moz-transition: all 0.28s ease;
   -webkit-transition: all 0.28s ease;
